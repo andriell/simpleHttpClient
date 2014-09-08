@@ -31,6 +31,11 @@ public class TestRedirectManagerSerial {
         HttpUrl c = new HttpUrl("http://c.ru/");
         HttpUrl d = new HttpUrl("http://d.ru/");
 
+        if (redirectManager.get(d).equals(d)) {
+            System.out.println("Ok.");
+        } else {
+            System.out.println("Error.");
+        }
 
         redirectManager.set(a1, b);
         redirectManager.set(b, c);
@@ -47,6 +52,12 @@ public class TestRedirectManagerSerial {
             redirectManager.set(d, a2);
             System.out.println("Ok.");
         } catch (LoopException e) {
+            System.out.println("Error.");
+        }
+
+        if (redirectManager.get(d).equals(a1)) {
+            System.out.println("Ok.");
+        } else {
             System.out.println("Error.");
         }
 
