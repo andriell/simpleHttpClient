@@ -37,6 +37,14 @@ public class HttpRequestProcess implements Runnable {
     private int maxRequest = 6;
     private int requestCount = 0;
 
+    // Запрос полностью сформирован, в следующей строчке он будет отправлен
+    private HttpEventHandler beforeRequest = null;
+    // После заголовков ответа
+    private HttpEventHandler afterResponseHeaders = null;
+    // Непосредственно перед редиректом
+    private HttpEventHandler beforeRedirect = null;
+    // В конце работы метода
+    private HttpEventHandler beforeComplite = null;
 
     @Override
     public void run() {
@@ -74,6 +82,9 @@ public class HttpRequestProcess implements Runnable {
                 headerRequest.addCookie(cookie);
             }
         }
+        if (beforeRequest != null) {
+            beforeRequest.on(this);
+        }
         socketOutputStream.write(headerRequest.getBytes());
 
         headerResponse = new HttpHeaderOutputStream(1000, 1000);
@@ -81,7 +92,9 @@ public class HttpRequestProcess implements Runnable {
         while (! headerResponse.isEnd()) {
             headerResponse.write(socketInputStream.read());
         }
-
+        if (afterResponseHeaders != null) {
+            afterResponseHeaders.on(this);
+        }
 
         // Записываем куки
         if (cookieManager != null) {
@@ -104,6 +117,9 @@ public class HttpRequestProcess implements Runnable {
         if (location != null) {
             url = location;
             socket.close();
+            if (beforeRedirect != null) {
+                beforeRedirect.on(this);
+            }
             query();
             return;
         }
@@ -120,6 +136,9 @@ public class HttpRequestProcess implements Runnable {
             || headerRequest.getMethod().equals(HttpRequestMethod.HEAD)
         ) {
             socket.close();
+            if (beforeComplite != null) {
+                beforeComplite.on(this);
+            }
             return;
         }
 
@@ -165,10 +184,39 @@ public class HttpRequestProcess implements Runnable {
         }
 
         socket.close();
+        if (beforeComplite != null) {
+            beforeComplite.on(this);
+        }
         return;
     }
 
+    //<editor-fold desc="Events">
+    public void beforeRequest(HttpEventHandler beforeRequest) {
+        this.beforeRequest = beforeRequest;
+    }
+
+    public void afterResponseHeaders(HttpEventHandler afterResponseHeaders) {
+        this.afterResponseHeaders = afterResponseHeaders;
+    }
+
+    public void beforeRedirect(HttpEventHandler beforeRedirect) {
+        this.beforeRedirect = beforeRedirect;
+    }
+
+    public void beforeComplite(HttpEventHandler beforeComplite) {
+        this.beforeComplite = beforeComplite;
+    }
+    //</editor-fold>
+
     //<editor-fold desc="Getters and Setters">
+    public HttpRequestMethod getMethod() {
+        return headerRequest.getMethod();
+    }
+
+    public void setMethod(HttpRequestMethod method) {
+        headerRequest.setMethod(method);
+    }
+
     public HttpExceptionHandler getExceptionHandler() {
         return exceptionHandler;
     }
@@ -177,12 +225,20 @@ public class HttpRequestProcess implements Runnable {
         this.exceptionHandler = exceptionHandler;
     }
 
-    public HttpRequestMethod getMethod() {
-        return headerRequest.getMethod();
+    public CookieManager getCookieManager() {
+        return cookieManager;
     }
 
-    public void setMethod(HttpRequestMethod method) {
-        headerRequest.setMethod(method);
+    public void setCookieManager(CookieManager cookieManager) {
+        this.cookieManager = cookieManager;
+    }
+
+    public RedirectManager getRedirectManager() {
+        return redirectManager;
+    }
+
+    public void setRedirectManager(RedirectManager redirectManager) {
+        this.redirectManager = redirectManager;
     }
 
     public HttpUrl getUrl() {
@@ -193,7 +249,19 @@ public class HttpRequestProcess implements Runnable {
         this.url = url;
     }
 
-    public OutputStream getUserOutputStream() {
+    public HttpHeaderRequest getHeaderRequest() {
+        return headerRequest;
+    }
+
+    public void setHeaderRequest(HttpHeaderRequest headerRequest) {
+        this.headerRequest = headerRequest;
+    }
+
+    public HttpHeaderOutputStream getHeaderResponse() {
+        return headerResponse;
+    }
+
+    public OutputStream getOutputStream() {
         return userOutputStream;
     }
 
@@ -216,26 +284,5 @@ public class HttpRequestProcess implements Runnable {
     public void setMaxRequest(int maxRequest) {
         this.maxRequest = maxRequest;
     }
-
-    public CookieManager getCookieManager() {
-        return cookieManager;
-    }
-
-    public void setCookieManager(CookieManager cookieManager) {
-        this.cookieManager = cookieManager;
-    }
-
-    public HttpHeaderOutputStream getHeaderResponse() {
-        return headerResponse;
-    }
-
-    public RedirectManager getRedirectManager() {
-        return redirectManager;
-    }
-
-    public void setRedirectManager(RedirectManager redirectManager) {
-        this.redirectManager = redirectManager;
-    }
-
     //</editor-fold>
 }

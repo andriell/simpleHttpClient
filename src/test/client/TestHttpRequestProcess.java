@@ -1,5 +1,6 @@
 package test.client;
 
+import http.client.HttpEventHandler;
 import http.client.HttpExceptionHandlerPrint;
 import http.client.RedirectManagerSerial;
 import http.cookie.CookieManagerSerial;
@@ -47,12 +48,12 @@ public class TestHttpRequestProcess {
 
         httpExceptionHandlerPrint = new HttpExceptionHandlerPrint();
 
-        //print("https://google.ru/");
-        //print("http://ya.ru/");
+        print("https://google.ru/");
+        print("http://ya.ru/");
         print("http://vk.com/");
 
-        //download("http://vk.com/", "vk.html");
-        //download("http://i.msdn.microsoft.com/dynimg/IC52612.gif", "IC52612.gif");
+        download("http://vk.com/", "vk.html");
+        download("http://i.msdn.microsoft.com/dynimg/IC52612.gif", "IC52612.gif");
 
         System.out.println("Сохранено кук " + cookieManager.save());
         System.out.println("Сохранено редиректов " + redirectManager.save());
@@ -61,8 +62,10 @@ public class TestHttpRequestProcess {
     void print(String url) throws Exception {
         HttpRequestProcess httpRequestProcess = new HttpRequestProcess();
         httpRequestProcess.setCookieManager(cookieManager);
-        //httpRequestProcess.setRedirectManager(redirectManager);
+        httpRequestProcess.setRedirectManager(redirectManager);
         httpRequestProcess.setExceptionHandler(httpExceptionHandlerPrint);
+        httpRequestProcess.beforeRedirect(new beforeRedirect());
+        httpRequestProcess.beforeComplite(new beforeComplite());
 
         httpRequestProcess.setUrl(new HttpUrl(url.getBytes()));
 
@@ -88,6 +91,8 @@ public class TestHttpRequestProcess {
         httpRequestProcess.setCookieManager(cookieManager);
         httpRequestProcess.setRedirectManager(redirectManager);
         httpRequestProcess.setExceptionHandler(httpExceptionHandlerPrint);
+        httpRequestProcess.beforeRedirect(new beforeRedirect());
+        httpRequestProcess.beforeComplite(new beforeComplite());
 
         httpRequestProcess.setUrl(new HttpUrl(url.getBytes()));
 
@@ -103,5 +108,19 @@ public class TestHttpRequestProcess {
 
         fileOutputStream.flush();
         fileOutputStream.close();
+    }
+
+    class beforeRedirect implements HttpEventHandler {
+        @Override
+        public void on(HttpRequestProcess httpRequestProcess) {
+            System.out.print("Redirect >>> " + httpRequestProcess.getHeaderRequest() + "Redirect <<< " + httpRequestProcess.getHeaderResponse());
+        }
+    }
+
+    class beforeComplite implements HttpEventHandler {
+        @Override
+        public void on(HttpRequestProcess httpRequestProcess) {
+            System.out.print("Complite >>> " + httpRequestProcess.getHeaderRequest() + "Complite <<< " + httpRequestProcess.getHeaderResponse());
+        }
     }
 }

@@ -12,5 +12,5 @@ public interface RedirectManager {
      * @return
      */
     public HttpUrl get(HttpUrl url);
-    public void set(HttpUrl from, HttpUrl to);
+    public void set(HttpUrl from, HttpUrl to) throws CircularityException;
 }

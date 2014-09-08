@@ -41,7 +41,9 @@ public class RedirectManagerSerial implements RedirectManager {
             if (bytes.length != 2) {
                 throw new IndexOutOfBoundsException("byte[][] Length != 2. Length = " + bytes.length);
             }
-            set(new HttpUrl(bytes[0]), new HttpUrl(bytes[1]));
+            try {
+                set(new HttpUrl(bytes[0]), new HttpUrl(bytes[1]));
+            } catch (CircularityException e) {}
         }
     }
 
@@ -86,9 +88,13 @@ public class RedirectManagerSerial implements RedirectManager {
     }
 
     @Override
-    public void set(HttpUrl from, HttpUrl to) {
-        if (!from.equals(to)) {
-            data.put(from, to);
+    public void set(HttpUrl from, HttpUrl to) throws CircularityException {
+        if (from.equals(to)) {
+            return;
         }
+        if (data.containsKey(to)) {
+            throw new CircularityException();
+        }
+        data.put(from, to);
     }
 }
