@@ -16,7 +16,6 @@ import http.helper.C;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
 
@@ -36,6 +35,7 @@ public class HttpRequestProcess implements Runnable {
     private String user = "";
     private int maxRequest = 6;
     private int requestCount = 0;
+    private boolean stop = false;
 
     // Запрос полностью сформирован, в следующей строчке он будет отправлен
     private HttpEventHandler beforeRequest = null;
@@ -61,6 +61,10 @@ public class HttpRequestProcess implements Runnable {
         if (url == null) {
             throw new NullPointerException("Url is null");
         }
+        if (stop) {
+            return;
+        }
+
         requestCount++;
         if (requestCount > maxRequest) {
             throw new Exception("Too many redirects " + requestCount + " Max=" + maxRequest);
@@ -83,7 +87,11 @@ public class HttpRequestProcess implements Runnable {
             }
         }
         if (beforeRequest != null) {
-            beforeRequest.on(this);
+            beforeRequest.go(this);
+            if (stop) {
+                socket.close();
+                return;
+            }
         }
         socketOutputStream.write(headerRequest.getBytes());
 
@@ -93,7 +101,11 @@ public class HttpRequestProcess implements Runnable {
             headerResponse.write(socketInputStream.read());
         }
         if (afterResponseHeaders != null) {
-            afterResponseHeaders.on(this);
+            afterResponseHeaders.go(this);
+            if (stop) {
+                socket.close();
+                return;
+            }
         }
 
         // Записываем куки
@@ -118,7 +130,7 @@ public class HttpRequestProcess implements Runnable {
             url = location;
             socket.close();
             if (beforeRedirect != null) {
-                beforeRedirect.on(this);
+                beforeRedirect.go(this);
             }
             query();
             return;
@@ -137,7 +149,7 @@ public class HttpRequestProcess implements Runnable {
         ) {
             socket.close();
             if (beforeComplite != null) {
-                beforeComplite.on(this);
+                beforeComplite.go(this);
             }
             return;
         }
@@ -185,26 +197,42 @@ public class HttpRequestProcess implements Runnable {
 
         socket.close();
         if (beforeComplite != null) {
-            beforeComplite.on(this);
+            beforeComplite.go(this);
         }
         return;
     }
 
     //<editor-fold desc="Events">
     public void beforeRequest(HttpEventHandler beforeRequest) {
-        this.beforeRequest = beforeRequest;
+        if (this.beforeRequest == null) {
+            this.beforeRequest = beforeRequest;
+        } else {
+            this.beforeRequest.after(beforeRequest);
+        }
     }
 
     public void afterResponseHeaders(HttpEventHandler afterResponseHeaders) {
-        this.afterResponseHeaders = afterResponseHeaders;
+        if (this.afterResponseHeaders == null) {
+            this.afterResponseHeaders = afterResponseHeaders;
+        } else {
+            this.afterResponseHeaders.after(afterResponseHeaders);
+        }
     }
 
     public void beforeRedirect(HttpEventHandler beforeRedirect) {
-        this.beforeRedirect = beforeRedirect;
+        if (this.beforeRedirect == null) {
+            this.beforeRedirect = beforeRedirect;
+        } else {
+            this.beforeRedirect.after(beforeRedirect);
+        }
     }
 
     public void beforeComplite(HttpEventHandler beforeComplite) {
-        this.beforeComplite = beforeComplite;
+        if (this.beforeComplite == null) {
+            this.beforeComplite = beforeComplite;
+        } else {
+            this.beforeComplite.after(beforeComplite);
+        }
     }
     //</editor-fold>
 

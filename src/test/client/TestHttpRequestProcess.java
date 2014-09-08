@@ -64,8 +64,9 @@ public class TestHttpRequestProcess {
         httpRequestProcess.setCookieManager(cookieManager);
         httpRequestProcess.setRedirectManager(redirectManager);
         httpRequestProcess.setExceptionHandler(httpExceptionHandlerPrint);
-        httpRequestProcess.beforeRedirect(new beforeRedirect());
-        httpRequestProcess.beforeComplite(new beforeComplite());
+        httpRequestProcess.beforeRedirect(new TestEventHandler("Redirect"));
+        httpRequestProcess.beforeComplite(new TestEventHandler("Complite"));
+        httpRequestProcess.beforeComplite(new TestEventHandler("Complite 2"));
 
         httpRequestProcess.setUrl(new HttpUrl(url.getBytes()));
 
@@ -91,8 +92,9 @@ public class TestHttpRequestProcess {
         httpRequestProcess.setCookieManager(cookieManager);
         httpRequestProcess.setRedirectManager(redirectManager);
         httpRequestProcess.setExceptionHandler(httpExceptionHandlerPrint);
-        httpRequestProcess.beforeRedirect(new beforeRedirect());
-        httpRequestProcess.beforeComplite(new beforeComplite());
+        httpRequestProcess.beforeRedirect(new TestEventHandler("Redirect"));
+        httpRequestProcess.beforeComplite(new TestEventHandler("Complite"));
+        httpRequestProcess.beforeComplite(new TestEventHandler("Complite 2"));
 
         httpRequestProcess.setUrl(new HttpUrl(url.getBytes()));
 
@@ -110,17 +112,16 @@ public class TestHttpRequestProcess {
         fileOutputStream.close();
     }
 
-    class beforeRedirect implements HttpEventHandler {
-        @Override
-        public void on(HttpRequestProcess httpRequestProcess) {
-            System.out.print("Redirect >>> " + httpRequestProcess.getHeaderRequest() + "Redirect <<< " + httpRequestProcess.getHeaderResponse());
-        }
-    }
+    class TestEventHandler extends HttpEventHandler {
+        private String name;
 
-    class beforeComplite implements HttpEventHandler {
+        TestEventHandler(String name) {
+            this.name = name;
+        }
+
         @Override
         public void on(HttpRequestProcess httpRequestProcess) {
-            System.out.print("Complite >>> " + httpRequestProcess.getHeaderRequest() + "Complite <<< " + httpRequestProcess.getHeaderResponse());
+            System.out.print(name + " >>> " + httpRequestProcess.getHeaderRequest() + name +" <<< " + httpRequestProcess.getHeaderResponse());
         }
     }
 }

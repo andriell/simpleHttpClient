@@ -93,7 +93,6 @@ public class RedirectManagerSerial implements RedirectManager {
         data.put(from, to);
     }
 
-    //<editor-fold desc="Getters and Setters">
     private boolean findLoop(HttpUrl start, HttpUrl to) {
         HttpUrl toCurrent = data.get(to);
         if (toCurrent == null) {
@@ -105,6 +104,7 @@ public class RedirectManagerSerial implements RedirectManager {
         return findLoop(start, toCurrent);
     }
 
+    //<editor-fold desc="Getters and Setters">
     public boolean isFindLoop() {
         return findLoop;
     }
