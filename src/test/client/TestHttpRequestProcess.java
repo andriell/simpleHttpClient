@@ -5,7 +5,7 @@ import http.client.HttpTransaction;
 import http.cookie.CookieManagerSerial;
 import http.datatypes.ContentType;
 import http.datatypes.HttpUrl;
-import http.client.HttpClient;
+import http.client.HttpRequestProcess;
 import http.header.HttpHeaders;
 import http.stream.output.HttpPartOutputStream;
 
@@ -16,20 +16,20 @@ import java.util.Iterator;
 /**
  * Created by arybalko on 04.09.14.
  */
-public class TestHttpClient {
+public class TestHttpRequestProcess {
     CookieManagerSerial cookieManager;
     HttpExceptionHandlerPrint httpExceptionHandlerPrint;
 
     public static void main(String[] args) {
         try {
-            new TestHttpClient().go();
+            new TestHttpRequestProcess().go();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     void go() throws Exception {
-        String fileName = System.getProperty("user.dir") + File.separator + "data" + File.separator + "TestHttpClient.bin";
+        String fileName = System.getProperty("user.dir") + File.separator + "data" + File.separator + "TestHttpRequestProcess.bin";
         cookieManager = new CookieManagerSerial(fileName);
         if (new File(fileName).isFile()) {
             cookieManager.load();
@@ -49,21 +49,21 @@ public class TestHttpClient {
     }
 
     void print(String url) throws Exception {
-        HttpClient httpClient = new HttpClient();
-        httpClient.setCookieManager(cookieManager);
-        httpClient.setExceptionHandler(httpExceptionHandlerPrint);
+        HttpRequestProcess httpRequestProcess = new HttpRequestProcess();
+        httpRequestProcess.setCookieManager(cookieManager);
+        httpRequestProcess.setExceptionHandler(httpExceptionHandlerPrint);
 
-        httpClient.setUrl(new HttpUrl(url.getBytes()));
+        httpRequestProcess.setUrl(new HttpUrl(url.getBytes()));
 
         HttpPartOutputStream httpPartOutputStream = new HttpPartOutputStream();
-        httpClient.setOutputStream(httpPartOutputStream);
-        httpClient.run();
-        Iterator<HttpTransaction> transactions = httpClient.getTransactions();
+        httpRequestProcess.setOutputStream(httpPartOutputStream);
+        httpRequestProcess.run();
+        Iterator<HttpTransaction> transactions = httpRequestProcess.getTransactions();
         while (transactions.hasNext()) {
             System.out.println(transactions.next());
         }
 
-        byte[] contentType = httpClient.getLastTransaction().getHeaderResponse().get(HttpHeaders.contentType);
+        byte[] contentType = httpRequestProcess.getLastTransaction().getHeaderResponse().get(HttpHeaders.contentType);
         if (contentType != null) {
             String charsetName = ContentType.getCharset(contentType);
             if (charsetName != null) {
@@ -77,11 +77,11 @@ public class TestHttpClient {
     }
 
     void download(String url, String file) throws Exception {
-        HttpClient httpClient = new HttpClient();
-        httpClient.setCookieManager(cookieManager);
-        httpClient.setExceptionHandler(httpExceptionHandlerPrint);
+        HttpRequestProcess httpRequestProcess = new HttpRequestProcess();
+        httpRequestProcess.setCookieManager(cookieManager);
+        httpRequestProcess.setExceptionHandler(httpExceptionHandlerPrint);
 
-        httpClient.setUrl(new HttpUrl(url.getBytes()));
+        httpRequestProcess.setUrl(new HttpUrl(url.getBytes()));
 
         String fileName = System.getProperty("user.dir") + File.separator + "data" + File.separator + file;
         File file1 = new File(fileName);
@@ -90,9 +90,9 @@ public class TestHttpClient {
         }
 
         FileOutputStream fileOutputStream = new FileOutputStream(fileName);
-        httpClient.setOutputStream(fileOutputStream);
-        httpClient.run();
-        Iterator<HttpTransaction> transactions = httpClient.getTransactions();
+        httpRequestProcess.setOutputStream(fileOutputStream);
+        httpRequestProcess.run();
+        Iterator<HttpTransaction> transactions = httpRequestProcess.getTransactions();
         while (transactions.hasNext()) {
             System.out.println(transactions.next());
         }

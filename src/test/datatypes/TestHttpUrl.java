@@ -5,7 +5,7 @@ import http.datatypes.HttpUrl;
 /**
  * Created by Андрей on 03.08.14.
  */
-public class TestHttpUrlNew {
+public class TestHttpUrl {
 
     public static void main(String[] args) throws Exception{
         /**

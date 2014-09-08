@@ -5,7 +5,7 @@ package http.client;
  */
 public class HttpExceptionHandlerPrint implements HttpExceptionHandler {
     @Override
-    public void exception(Exception e, HttpClient httpClient) {
-        System.out.println(e + " " + httpClient.getUrl());
+    public void exception(Exception e, HttpRequestProcess httpRequestProcess) {
+        System.out.println(e + " " + httpRequestProcess.getUrl());
     }
 }
