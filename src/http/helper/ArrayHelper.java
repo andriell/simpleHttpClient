@@ -103,7 +103,7 @@ public class ArrayHelper {
         byte[] r;
         if (i == 0) {
             r = new byte[1];
-            r[0] = 48;
+            r[0] = C.ZERO;
             return r;
         }
         boolean negative = i < 0;
@@ -202,7 +202,7 @@ public class ArrayHelper {
         for (; i <= end; i++) {
             b = bytes[i];
             if (47 < b && b < 58) {
-                b -= 48;
+                b -= C.ZERO;
             } else if (64 < b && b < 91) {
                 // Заглавные буквы
                 b -= 55;

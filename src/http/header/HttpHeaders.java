@@ -159,7 +159,7 @@ public class HttpHeaders {
         return i;
     }
 
-    static class HttpHeadersComparator implements Comparator<HttpFieldName> {
+    private static class HttpHeadersComparator implements Comparator<HttpFieldName> {
         @Override
         public int compare(HttpFieldName o1, HttpFieldName o2) {
             if (o1.equals(o2)) {

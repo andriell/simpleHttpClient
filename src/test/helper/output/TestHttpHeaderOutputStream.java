@@ -1,4 +1,4 @@
-package test.client.reader;
+package test.helper.output;
 
 import http.stream.output.HttpHeaderOutputStream;
 
