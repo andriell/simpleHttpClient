@@ -11,6 +11,7 @@ import java.util.TreeMap;
  * Created by arybalko on 08.09.14.
  */
 public class RedirectManagerSerial implements RedirectManager {
+    protected boolean fiendCircularity = true;
     protected File file;
 
     private TreeMap<HttpUrl, HttpUrl> data = new TreeMap<HttpUrl, HttpUrl>();
@@ -48,7 +49,6 @@ public class RedirectManagerSerial implements RedirectManager {
         int l = data.size();
         byte[][][] dataToSave = new byte[l][][];
 
-        // User, domain, HttpCookie
         int i = 0;
         for(Map.Entry<HttpUrl, HttpUrl> entry: data.entrySet()) {
             dataToSave[i] = new byte[2][];
@@ -68,8 +68,6 @@ public class RedirectManagerSerial implements RedirectManager {
     }
 
     public void printAll() {
-        // Выясняем длинну
-        // User, domain, HttpCookie
         for(Map.Entry<HttpUrl, HttpUrl> entry: data.entrySet()) {
             System.out.println(entry.getKey() + " > " + entry.getValue());
         }
@@ -89,6 +87,38 @@ public class RedirectManagerSerial implements RedirectManager {
         if (from.equals(to)) {
             return;
         }
+        if (fiendCircularity && findCircularity(from, to)) {
+            throw new CircularityException(from, to);
+        }
         data.put(from, to);
     }
+
+    //<editor-fold desc="Getters and Setters">
+    private boolean findCircularity(HttpUrl start, HttpUrl to) {
+        HttpUrl toCurrent = data.get(to);
+        if (toCurrent == null) {
+            return false;
+        }
+        if (toCurrent.equals(start)) {
+            return true;
+        }
+        return findCircularity(start, toCurrent);
+    }
+
+    public boolean isFiendCircularity() {
+        return fiendCircularity;
+    }
+
+    public void setFiendCircularity(boolean fiendCircularity) {
+        this.fiendCircularity = fiendCircularity;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public TreeMap<HttpUrl, HttpUrl> getData() {
+        return data;
+    }
+    //</editor-fold>
 }
