@@ -52,7 +52,20 @@ public class HttpRequestProcess implements Runnable {
         }
     }
 
+    public void setCookie() {
+        if (cookieManager != null && url != null) {
+            Iterable<Cookie> cookies = cookieManager.get(user, url.getDomain(), url.getPath(), url.getScheme() == HttpUrlSheme.https);
+            for (Cookie cookie: cookies) {
+                headerRequest.addCookie(cookie);
+            }
+        }
+    }
+
     private void query() throws Exception {
+        if (url == null) {
+            throw new NullPointerException("Url is null");
+        }
+
         HttpUrl urlReq = url;
 
         // Перемещен ли этот URL
@@ -66,14 +79,9 @@ public class HttpRequestProcess implements Runnable {
         socketInputStream = socket.getInputStream();
 
         lastTransaction = new HttpTransaction();
-        if (cookieManager != null) {
-            Iterable<Cookie> cookies = cookieManager.get(user, url.getDomain(), url.getPath(), url.getScheme() == HttpUrlSheme.https);
-            for (Cookie cookie: cookies) {
-                headerRequest.addCookie(cookie);
-            }
-        }
         lastTransaction.setHeaderRequest(headerRequest);
-        socketOutputStream.write(headerRequest.getByte());
+        setCookie();
+        socketOutputStream.write(headerRequest.getBytes());
 
         HttpHeaderOutputStream headerResponse = new HttpHeaderOutputStream(1000, 1000);
         // Читаем заголовок ответа
@@ -194,7 +202,7 @@ public class HttpRequestProcess implements Runnable {
     }
 
     public void setUrl(HttpUrl url) {
-        headerRequest.setRequestURI(url);
+        headerRequest.url(url);
         this.url = url;
     }
 

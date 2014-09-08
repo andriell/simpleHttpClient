@@ -2,7 +2,6 @@ package http.cookie;
 
 import http.datatypes.Domain;
 import http.datatypes.HttpDate;
-import http.datatypes.HttpDateFormat;
 import http.datatypes.Path;
 import http.helper.ArrayHelper;
 import http.helper.C;
@@ -174,7 +173,7 @@ public class Cookie {
             l += C.BS_DOMAIN.length;
             System.arraycopy(C.BS_EQUALS, 0, r, l, C.BS_EQUALS.length);
             l += C.BS_EQUALS.length;
-            System.arraycopy(domain.getByte(), 0, r, l, domain.length());
+            System.arraycopy(domain.getBytes(), 0, r, l, domain.length());
             l += domain.length();
         }
         if (path != null) {
@@ -184,7 +183,7 @@ public class Cookie {
             l += C.BS_PATH.length;
             System.arraycopy(C.BS_EQUALS, 0, r, l, C.BS_EQUALS.length);
             l += C.BS_EQUALS.length;
-            System.arraycopy(path.getByte(), 0, r, l, path.length());
+            System.arraycopy(path.getBytes(), 0, r, l, path.length());
             l += path.length();
         }
         if (secure) {

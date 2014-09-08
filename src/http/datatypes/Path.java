@@ -60,7 +60,7 @@ public class Path implements Comparable<Path> {
         return data.length;
     }
 
-    public byte[] getByte() {
+    public byte[] getBytes() {
         return data;
     }
 

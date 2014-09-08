@@ -165,7 +165,7 @@ public class HttpUrl implements Comparable<HttpUrl> {
             pathDecode = new byte[l];
 
             l = 0;
-            System.arraycopy(path.getByte(), 0, pathDecode, l, path.length());
+            System.arraycopy(path.getBytes(), 0, pathDecode, l, path.length());
             l += path.length();
             if (query != null) {
                 System.arraycopy(C.BS_QUESTION, 0, pathDecode, l, C.BS_QUESTION.length);
@@ -214,7 +214,7 @@ public class HttpUrl implements Comparable<HttpUrl> {
         l += scheme.name().length();
         System.arraycopy(C.BS_COLON_SS, 0, r, l, C.BS_COLON_SS.length);
         l += C.BS_COLON_SS.length;
-        System.arraycopy(domain.getByte(), 0, r, l, domain.length());
+        System.arraycopy(domain.getBytes(), 0, r, l, domain.length());
         l += domain.length();
         if (this.port > 0) {
             System.arraycopy(C.BS_COLON, 0, r, l, C.BS_COLON.length);
@@ -222,7 +222,7 @@ public class HttpUrl implements Comparable<HttpUrl> {
             System.arraycopy(port, 0, r, l, port.length);
             l += port.length;
         }
-        System.arraycopy(path.getByte(), 0, r, l, path.length());
+        System.arraycopy(path.getBytes(), 0, r, l, path.length());
         l += path.length();
         if (query != null) {
             System.arraycopy(C.BS_QUESTION, 0, r, l, C.BS_QUESTION.length);
@@ -234,7 +234,7 @@ public class HttpUrl implements Comparable<HttpUrl> {
         return r;
     }
 
-    public byte[] getByte() {
+    public byte[] getBytes() {
         byte[] domainPath = domainPathParam();
         int l = domainPath.length;
         if (fragment != null) {
@@ -257,7 +257,7 @@ public class HttpUrl implements Comparable<HttpUrl> {
 
     @Override
     public String toString() {
-        return new String(getByte());
+        return new String(getBytes());
     }
 
     @Override

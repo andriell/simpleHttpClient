@@ -91,7 +91,7 @@ public class Domain implements Comparable<Domain> {
         return data.length;
     }
 
-    public byte[] getByte() {
+    public byte[] getBytes() {
         return data;
     }
 

@@ -6,7 +6,7 @@ import http.datatypes.HttpUrl;
 import http.helper.ArrayHelper;
 import http.helper.C;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -14,45 +14,58 @@ import java.util.TreeMap;
  * Created by arybalko on 02.09.14.
  */
 public class HttpHeaderRequest {
+    private static String accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
+    private static String acceptEncoding = "gzip,deflate,sdch";
+    private static String acceptLanguage = "ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4";
+    private static String cacheControl = "no-cache";
+    private static String connection = "close";
+    private static String userAgent = "simpleHttpClient v1.0";
+
     private HttpRequestMethod method = HttpRequestMethod.GET;
     private byte[] requestURI = new byte[0];
     private byte[] version = C.HTTP1P1;
     private byte[] data = null;
 
     private TreeMap<HttpFieldName, byte[]> headers = new TreeMap<HttpFieldName, byte[]>(HttpHeaders.comparator);
-    private ArrayList<Cookie> cookie = new ArrayList<Cookie>();
+    private HashSet<Cookie> cookie = new HashSet<Cookie>(10);
 
     //<editor-fold desc="Constructors">
     public HttpHeaderRequest() {
-        defaultHeaders();
+        setDefaultHeaders();
     }
 
     public HttpHeaderRequest(HttpRequestMethod method) {
         setMethod(method);
-        defaultHeaders();
+        setDefaultHeaders();
     }
 
     public HttpHeaderRequest(HttpUrl url) {
-        setRequestURI(url);
-        defaultHeaders();
+        url(url);
+        setDefaultHeaders();
     }
 
     public HttpHeaderRequest(HttpRequestMethod method, HttpUrl url) {
         setMethod(method);
-        setRequestURI(url);
-        defaultHeaders();
+        url(url);
+        setDefaultHeaders();
     }
     //</editor-fold>
 
-    private void defaultHeaders() {
-        set(HttpHeaders.accept, "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-        set(HttpHeaders.acceptEncoding, "gzip,deflate,sdch");
-        set(HttpHeaders.acceptLanguage, "ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4");
-        set(HttpHeaders.cacheControl, "no-cache");
-        set(HttpHeaders.connection, "close");
-        set(HttpHeaders.userAgent, "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36");
+    public void setDefaultHeaders() {
+        set(HttpHeaders.accept, accept);
+        set(HttpHeaders.acceptEncoding, acceptEncoding);
+        set(HttpHeaders.acceptLanguage, acceptLanguage);
+        set(HttpHeaders.cacheControl, cacheControl);
+        set(HttpHeaders.connection, connection);
+        set(HttpHeaders.userAgent, userAgent);
     }
 
+    public void url(HttpUrl url) {
+        requestURI = url.domainPathParam();
+        set(HttpHeaders.host, url.getDomain().getBytes());
+    }
+
+    //<editor-fold desc="Getters and Setters">
     public byte[] getVersion() {
         return version;
     }
@@ -61,25 +74,12 @@ public class HttpHeaderRequest {
         this.version = version;
     }
 
-    public void setRequestURI(HttpUrl url) {
-        requestURI = url.domainPathParam();
-        set(HttpHeaders.host, url.getDomain().getByte());
-    }
-
     public byte[] getRequestURI() {
         return requestURI;
     }
 
-    public void set(HttpFieldName name, String value) {
-        set(name, value.getBytes());
-    }
-
-    public void set(HttpFieldName name, byte[] value) {
-        headers.put(name, value);
-    }
-
-    public byte[] get(HttpFieldName name) {
-        return headers.get(name);
+    public void setRequestURI(byte[] requestURI) {
+        this.requestURI = requestURI;
     }
 
     public HttpRequestMethod getMethod() {
@@ -88,6 +88,18 @@ public class HttpHeaderRequest {
 
     public void setMethod(HttpRequestMethod method) {
         this.method = method;
+    }
+
+    public byte[] get(HttpFieldName name) {
+        return headers.get(name);
+    }
+
+    public void set(HttpFieldName name, byte[] value) {
+        headers.put(name, value);
+    }
+
+    public void set(HttpFieldName name, String value) {
+        set(name, value.getBytes());
     }
 
     public void addCookie(Cookie cookie) {
@@ -102,8 +114,13 @@ public class HttpHeaderRequest {
     public byte[] getData() {
         return data;
     }
+    //</editor-fold>
 
-    public byte[] getByte() {
+    public byte[] getBytes() {
+        return getBytes(true);
+    }
+
+    public byte[] getBytes(boolean returnData) {
         byte[] method = this.method.toString().getBytes();
 
         int l = method.length + C.BS_SP.length + requestURI.length + C.BS_SP.length + version.length + C.BS_CRLF.length;
@@ -123,7 +140,7 @@ public class HttpHeaderRequest {
             l += C.BS_CRLF.length;
         }
         l += C.BS_CRLF.length;
-        if (data != null) {
+        if (returnData && data != null) {
             l += data.length;
         }
 
@@ -178,7 +195,7 @@ public class HttpHeaderRequest {
         }
         System.arraycopy(C.BS_CRLF, 0, r, l, C.BS_CRLF.length);
         l += C.BS_CRLF.length;
-        if (data != null) {
+        if (returnData && data != null) {
             System.arraycopy(data, 0, r, l, data.length);
             l += data.length;
         }
@@ -188,6 +205,6 @@ public class HttpHeaderRequest {
 
     @Override
     public String toString() {
-        return new String(getByte());
+        return new String(getBytes(false));
     }
 }
