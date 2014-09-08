@@ -22,18 +22,52 @@ public class HttpHeaderRequest {
     private TreeMap<HttpFieldName, byte[]> headers = new TreeMap<HttpFieldName, byte[]>(HttpHeaders.comparator);
     private ArrayList<Cookie> cookie = new ArrayList<Cookie>();
 
-    public HttpHeaderRequest(HttpRequestMethod method, HttpUrl url) {
-        this.method = method;
+    //<editor-fold desc="Constructors">
+    public HttpHeaderRequest() {
+        defaultHeaders();
+    }
 
-        requestURI = url.domainPathParam();
-        set(HttpHeaders.host, url.getDomain().getByte());
+    public HttpHeaderRequest(HttpRequestMethod method) {
+        setMethod(method);
+        defaultHeaders();
+    }
+
+    public HttpHeaderRequest(HttpUrl url) {
+        setRequestURI(url);
+        defaultHeaders();
+    }
+
+    public HttpHeaderRequest(HttpRequestMethod method, HttpUrl url) {
+        setMethod(method);
+        setRequestURI(url);
+        defaultHeaders();
+    }
+    //</editor-fold>
+
+    private void defaultHeaders() {
         set(HttpHeaders.accept, "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
         set(HttpHeaders.acceptEncoding, "gzip,deflate,sdch");
         set(HttpHeaders.acceptLanguage, "ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4");
         set(HttpHeaders.cacheControl, "no-cache");
-        set(HttpHeaders.connection, "keep-alive");
-
+        set(HttpHeaders.connection, "close");
         set(HttpHeaders.userAgent, "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36");
+    }
+
+    public byte[] getVersion() {
+        return version;
+    }
+
+    public void setVersion(byte[] version) {
+        this.version = version;
+    }
+
+    public void setRequestURI(HttpUrl url) {
+        requestURI = url.domainPathParam();
+        set(HttpHeaders.host, url.getDomain().getByte());
+    }
+
+    public byte[] getRequestURI() {
+        return requestURI;
     }
 
     public void set(HttpFieldName name, String value) {
@@ -44,13 +78,29 @@ public class HttpHeaderRequest {
         headers.put(name, value);
     }
 
-    public void setCookie(Cookie cookie) {
+    public byte[] get(HttpFieldName name) {
+        return headers.get(name);
+    }
+
+    public HttpRequestMethod getMethod() {
+        return method;
+    }
+
+    public void setMethod(HttpRequestMethod method) {
+        this.method = method;
+    }
+
+    public void addCookie(Cookie cookie) {
         this.cookie.add(cookie);
     }
 
     public void setData(byte[] data) {
         set(HttpHeaders.contentLength, ArrayHelper.intToArry(data.length));
         this.data = data;
+    }
+
+    public byte[] getData() {
+        return data;
     }
 
     public byte[] getByte() {

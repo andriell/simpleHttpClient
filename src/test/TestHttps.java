@@ -34,7 +34,7 @@ public class TestHttps {
                 "cache-control: no-cache\r\n"+
                 "pragma: no-cache\r\n"+
                 "user-agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.102 Safari/537.36\r\n"+
-                "x-client-data: CIa2yQEIpbbJAQiptskBCMS2yQEInobKAQi4iMoBCO6IygEI0ZTKAQ==\r\n" +
+                "x-request-data: CIa2yQEIpbbJAQiptskBCMS2yQEInobKAQi4iMoBCO6IygEI0ZTKAQ==\r\n" +
                 "\r\n";
 
         InputStream inputStream = sslsocket.getInputStream();

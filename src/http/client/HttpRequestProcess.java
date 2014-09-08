@@ -31,6 +31,7 @@ public class HttpRequestProcess implements Runnable {
 
     private HttpRequestMethod method = HttpRequestMethod.GET;
     private HttpUrl url;
+    private HttpHeaderRequest headerRequest = new HttpHeaderRequest(method);
     private OutputStream userOutputStream;
     private String user = "";
     private int maxRequest = 6;
@@ -51,7 +52,6 @@ public class HttpRequestProcess implements Runnable {
         }
     }
 
-
     private void query() throws Exception {
         HttpUrl urlReq = url;
 
@@ -65,16 +65,14 @@ public class HttpRequestProcess implements Runnable {
         socketOutputStream = socket.getOutputStream();
         socketInputStream = socket.getInputStream();
 
-        HttpHeaderRequest headerRequest = new HttpHeaderRequest(method, url);
         lastTransaction = new HttpTransaction();
-        lastTransaction.setHeaderRequest(headerRequest);
-
         if (cookieManager != null) {
             Iterable<Cookie> cookies = cookieManager.get(user, url.getDomain(), url.getPath(), url.getScheme() == HttpUrlSheme.https);
             for (Cookie cookie: cookies) {
-                headerRequest.setCookie(cookie);
+                headerRequest.addCookie(cookie);
             }
         }
+        lastTransaction.setHeaderRequest(headerRequest);
         socketOutputStream.write(headerRequest.getByte());
 
         HttpHeaderOutputStream headerResponse = new HttpHeaderOutputStream(1000, 1000);
@@ -187,6 +185,7 @@ public class HttpRequestProcess implements Runnable {
     }
 
     public void setMethod(HttpRequestMethod method) {
+        headerRequest.setMethod(method);
         this.method = method;
     }
 
@@ -195,6 +194,7 @@ public class HttpRequestProcess implements Runnable {
     }
 
     public void setUrl(HttpUrl url) {
+        headerRequest.setRequestURI(url);
         this.url = url;
     }
 

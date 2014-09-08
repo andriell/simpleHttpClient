@@ -31,7 +31,7 @@ public class TestHttpUrl {
         print("http://abc.com:80/~smith/home.html");
         print("http://ABC.com/%7Esmith/home.html");
         print("http://ABC.com:/%7esmith/home.html");
-        print("https://www.google.ru:123/search?q=Coocie&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:ru:official&client=firefox-a&channel=sb&gfe_rd=cr&ei=eZQFVJf_J8zEYNSOgdgM#channel=sb&newwindow=1&q=cookie+specification&rls=org.mozilla:ru:official");
+        print("https://www.google.ru:123/search?q=Coocie&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:ru:official&request=firefox-a&channel=sb&gfe_rd=cr&ei=eZQFVJf_J8zEYNSOgdgM#channel=sb&newwindow=1&q=cookie+specification&rls=org.mozilla:ru:official");
 
     }
 

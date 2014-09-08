@@ -23,11 +23,11 @@ public class HttpClient {
     }
     private HttpClient() {}
 
-    public static HttpRequestProcess client() {
-        return getInstance().newClient();
+    public static HttpRequestProcess request() {
+        return getInstance().newRequest();
     }
 
-    public HttpRequestProcess newClient() {
+    public HttpRequestProcess newRequest() {
         HttpRequestProcess httpRequestProcess = new HttpRequestProcess();
         httpRequestProcess.setCookieManager(cookieManager);
         httpRequestProcess.setExceptionHandler(exceptionHandler);
@@ -36,7 +36,7 @@ public class HttpClient {
 
     //<editor-fold desc="Download">
     public void download(String user, String url, File file) {
-        HttpRequestProcess client = newClient();
+        HttpRequestProcess client = newRequest();
         try {
             client.setUser(user);
             client.setUrl(new HttpUrl(url));
@@ -98,11 +98,11 @@ public class HttpClient {
     }
 
     public String getString(String user, HttpUrl url) {
-        return getString(newClient(), user, url);
+        return getString(newRequest(), user, url);
     }
 
     public String getString(String user, String url) {
-        HttpRequestProcess client = newClient();
+        HttpRequestProcess client = newRequest();
         try {
             return getString(client, user, new HttpUrl(url));
         } catch (Exception e) {
