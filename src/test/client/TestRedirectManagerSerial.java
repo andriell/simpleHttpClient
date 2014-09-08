@@ -43,12 +43,14 @@ public class TestRedirectManagerSerial {
         }
 
         try {
-            redirectManager.setFiendCircularity(false);
+            redirectManager.setFindCircularity(false);
             redirectManager.set(d, a2);
             System.out.println("Ok.");
 
         } catch (CircularityException e) {
             System.out.println("Error.");
         }
+
+        redirectManager.save();
     }
 }

@@ -11,7 +11,7 @@ import java.util.TreeMap;
  * Created by arybalko on 08.09.14.
  */
 public class RedirectManagerSerial implements RedirectManager {
-    protected boolean fiendCircularity = true;
+    protected boolean findCircularity = true;
     protected File file;
 
     private TreeMap<HttpUrl, HttpUrl> data = new TreeMap<HttpUrl, HttpUrl>();
@@ -87,7 +87,7 @@ public class RedirectManagerSerial implements RedirectManager {
         if (from.equals(to)) {
             return;
         }
-        if (fiendCircularity && findCircularity(from, to)) {
+        if (findCircularity && findCircularity(from, to)) {
             throw new CircularityException(from, to);
         }
         data.put(from, to);
@@ -105,12 +105,12 @@ public class RedirectManagerSerial implements RedirectManager {
         return findCircularity(start, toCurrent);
     }
 
-    public boolean isFiendCircularity() {
-        return fiendCircularity;
+    public boolean isFindCircularity() {
+        return findCircularity;
     }
 
-    public void setFiendCircularity(boolean fiendCircularity) {
-        this.fiendCircularity = fiendCircularity;
+    public void setFindCircularity(boolean findCircularity) {
+        this.findCircularity = findCircularity;
     }
 
     public File getFile() {
