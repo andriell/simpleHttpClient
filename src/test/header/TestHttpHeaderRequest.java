@@ -22,7 +22,7 @@ public class TestHttpHeaderRequest {
     }
 
     void go() throws Exception {
-        HttpUrl url = new HttpUrl("http://www.google.ru/search?q=Coocie&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:ru:official&request=firefox-a&channel=sb&gfe_rd=cr&ei=eZQFVJf_J8zEYNSOgdgM#channel=sb&newwindow=1&q=cookie+specification&rls=org.mozilla:ru:official");
+        HttpUrl url = new HttpUrl("http://www.google.com/search?q=Coocie&ie=utf-8&oe=utf-8&rls=org.mozilla:ru:official&channel=sb&gfe_rd=cr&ei=eZQFVJf_J8zEYNSOgdgM");
         HttpHeaderRequest rquest = new HttpHeaderRequest();
         rquest.setMethod(HttpRequestMethod.GET);
         rquest.url(url);

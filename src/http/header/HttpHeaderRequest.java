@@ -7,6 +7,7 @@ import http.helper.ArrayHelper;
 import http.helper.C;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -65,6 +66,56 @@ public class HttpHeaderRequest {
         set(HttpHeaders.host, url.getDomain().getBytes());
     }
 
+    //<editor-fold desc="Getters and Setters Static">
+    public static String getAccept() {
+        return accept;
+    }
+
+    public static void setAccept(String accept) {
+        HttpHeaderRequest.accept = accept;
+    }
+
+    public static String getAcceptEncoding() {
+        return acceptEncoding;
+    }
+
+    public static void setAcceptEncoding(String acceptEncoding) {
+        HttpHeaderRequest.acceptEncoding = acceptEncoding;
+    }
+
+    public static String getAcceptLanguage() {
+        return acceptLanguage;
+    }
+
+    public static void setAcceptLanguage(String acceptLanguage) {
+        HttpHeaderRequest.acceptLanguage = acceptLanguage;
+    }
+
+    public static String getCacheControl() {
+        return cacheControl;
+    }
+
+    public static void setCacheControl(String cacheControl) {
+        HttpHeaderRequest.cacheControl = cacheControl;
+    }
+
+    public static String getConnection() {
+        return connection;
+    }
+
+    public static void setConnection(String connection) {
+        HttpHeaderRequest.connection = connection;
+    }
+
+    public static String getUserAgent() {
+        return userAgent;
+    }
+
+    public static void setUserAgent(String userAgent) {
+        HttpHeaderRequest.userAgent = userAgent;
+    }
+    //</editor-fold>
+
     //<editor-fold desc="Getters and Setters">
     public byte[] getVersion() {
         return version;
@@ -104,6 +155,10 @@ public class HttpHeaderRequest {
 
     public void addCookie(Cookie cookie) {
         this.cookie.add(cookie);
+    }
+
+    public Iterator<Cookie> cookieIterator() {
+        return cookie.iterator();
     }
 
     public void setData(byte[] data) {
