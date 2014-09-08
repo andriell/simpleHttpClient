@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 public class HttpClient {
     private HttpExceptionHandler exceptionHandler = null;
     private CookieManager cookieManager = null;
+    private RedirectManager redirectManager = null;
 
     private static HttpClient ourInstance = new HttpClient();
     public static HttpClient getInstance() {
@@ -31,6 +32,7 @@ public class HttpClient {
         HttpRequestProcess httpRequestProcess = new HttpRequestProcess();
         httpRequestProcess.setCookieManager(cookieManager);
         httpRequestProcess.setExceptionHandler(exceptionHandler);
+        httpRequestProcess.setRedirectManager(redirectManager);
         return httpRequestProcess;
     }
 
@@ -136,6 +138,14 @@ public class HttpClient {
 
     public void setExceptionHandler(HttpExceptionHandler exceptionHandler) {
         this.exceptionHandler = exceptionHandler;
+    }
+
+    public RedirectManager getRedirectManager() {
+        return redirectManager;
+    }
+
+    public void setRedirectManager(RedirectManager redirectManager) {
+        this.redirectManager = redirectManager;
     }
     //</editor-fold>
 }

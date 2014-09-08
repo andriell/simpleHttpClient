@@ -18,7 +18,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
 
 public class HttpRequestProcess implements Runnable {
@@ -28,14 +27,13 @@ public class HttpRequestProcess implements Runnable {
 
     private HttpExceptionHandler exceptionHandler = null;
     private CookieManager cookieManager = null;
+    private RedirectManager redirectManager = null;
 
     private HttpUrl url;
     private HttpHeaderRequest headerRequest = new HttpHeaderRequest();
     private OutputStream userOutputStream;
     private String user = "";
     private int maxRequest = 6;
-
-    private TreeMap<HttpUrl, HttpUrl> redirect301 = new TreeMap<HttpUrl, HttpUrl>();
 
     ArrayList<HttpTransaction> transactions = new ArrayList<HttpTransaction>(maxRequest);
     HttpTransaction lastTransaction = null;
@@ -51,7 +49,10 @@ public class HttpRequestProcess implements Runnable {
         }
     }
 
-    public void setCookie() {
+    public void buildHeaderRequest() {
+        if (url != null) {
+            headerRequest.url(url);
+        }
         if (cookieManager != null && url != null) {
             Iterable<Cookie> cookies = cookieManager.get(user, url.getDomain(), url.getPath(), url.getScheme() == HttpUrlSheme.https);
             for (Cookie cookie: cookies) {
@@ -65,12 +66,9 @@ public class HttpRequestProcess implements Runnable {
             throw new NullPointerException("Url is null");
         }
 
-        HttpUrl urlReq = url;
-
         // Перемещен ли этот URL
-        url = redirect301.get(url);
-        if (url == null) {
-            url = urlReq;
+        if (redirectManager != null) {
+            url = redirectManager.get(url);
         }
 
         socket = SocketManager.get(url);
@@ -79,7 +77,7 @@ public class HttpRequestProcess implements Runnable {
 
         lastTransaction = new HttpTransaction();
         lastTransaction.setHeaderRequest(headerRequest);
-        setCookie();
+        buildHeaderRequest();
         socketOutputStream.write(headerRequest.getBytes());
 
         HttpHeaderOutputStream headerResponse = new HttpHeaderOutputStream(1000, 1000);
@@ -107,7 +105,9 @@ public class HttpRequestProcess implements Runnable {
         HttpUrl location = null;
         if (headerResponse.getStatusCode() == 301) { // Постоянно перемещен
             location = new HttpUrl(headerResponse.get(HttpHeaders.location));
-            redirect301.put(url, location);
+            if (redirectManager != null) {
+                redirectManager.set(url, location);
+            }
         } else if (headerResponse.getStatusCode() == 302) {// Временно перемещен
             location = new HttpUrl(headerResponse.get(HttpHeaders.location));
         }
@@ -200,7 +200,6 @@ public class HttpRequestProcess implements Runnable {
     }
 
     public void setUrl(HttpUrl url) {
-        headerRequest.url(url);
         this.url = url;
     }
 
@@ -240,8 +239,17 @@ public class HttpRequestProcess implements Runnable {
         return lastTransaction;
     }
 
-    public Iterator<HttpTransaction> getTransactions() {
+    public Iterator<HttpTransaction> transactionsIterator() {
         return transactions.iterator();
     }
+
+    public RedirectManager getRedirectManager() {
+        return redirectManager;
+    }
+
+    public void setRedirectManager(RedirectManager redirectManager) {
+        this.redirectManager = redirectManager;
+    }
+
     //</editor-fold>
 }

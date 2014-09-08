@@ -2,6 +2,7 @@ package test.client;
 
 import http.client.HttpExceptionHandlerPrint;
 import http.client.HttpTransaction;
+import http.client.RedirectManagerSerial;
 import http.cookie.CookieManagerSerial;
 import http.datatypes.ContentType;
 import http.datatypes.HttpUrl;
@@ -19,6 +20,7 @@ import java.util.Iterator;
 public class TestHttpRequestProcess {
     CookieManagerSerial cookieManager;
     HttpExceptionHandlerPrint httpExceptionHandlerPrint;
+    RedirectManagerSerial redirectManager;
 
     public static void main(String[] args) {
         try {
@@ -29,28 +31,37 @@ public class TestHttpRequestProcess {
     }
 
     void go() throws Exception {
-        String fileName = System.getProperty("user.dir") + File.separator + "data" + File.separator + "TestHttpRequestProcess.bin";
-        cookieManager = new CookieManagerSerial(fileName);
-        if (new File(fileName).isFile()) {
+        String fileCookie = System.getProperty("user.dir") + File.separator + "data" + File.separator + "TestHttpRequestProcess-cookie.bin";
+        cookieManager = new CookieManagerSerial(fileCookie);
+        if (new File(fileCookie).isFile()) {
             cookieManager.load();
+
+        }
+
+        String fileRedirect = System.getProperty("user.dir") + File.separator + "data" + File.separator + "TestHttpRequestProcess-redirect.bin";
+        redirectManager = new RedirectManagerSerial(fileRedirect);
+        if (new File(fileRedirect).isFile()) {
+            redirectManager.load();
+            redirectManager.printAll();
         }
 
         httpExceptionHandlerPrint = new HttpExceptionHandlerPrint();
 
-        print("http://google.ru/");
-        print("http://google.ru/");
-        print("http://ya.ru/");
+        //print("https://google.ru/");
+        //print("http://ya.ru/");
         print("http://vk.com/");
 
-        download("http://vk.com/", "vk.html");
-        download("http://i.msdn.microsoft.com/dynimg/IC52612.gif", "IC52612.gif");
+        //download("http://vk.com/", "vk.html");
+        //download("http://i.msdn.microsoft.com/dynimg/IC52612.gif", "IC52612.gif");
 
-        cookieManager.save();
+        System.out.println("Сохранено кук " + cookieManager.save());
+        System.out.println("Сохранено редиректов " + redirectManager.save());
     }
 
     void print(String url) throws Exception {
         HttpRequestProcess httpRequestProcess = new HttpRequestProcess();
         httpRequestProcess.setCookieManager(cookieManager);
+        //httpRequestProcess.setRedirectManager(redirectManager);
         httpRequestProcess.setExceptionHandler(httpExceptionHandlerPrint);
 
         httpRequestProcess.setUrl(new HttpUrl(url.getBytes()));
@@ -58,7 +69,7 @@ public class TestHttpRequestProcess {
         HttpPartOutputStream httpPartOutputStream = new HttpPartOutputStream();
         httpRequestProcess.setOutputStream(httpPartOutputStream);
         httpRequestProcess.run();
-        Iterator<HttpTransaction> transactions = httpRequestProcess.getTransactions();
+        Iterator<HttpTransaction> transactions = httpRequestProcess.transactionsIterator();
         while (transactions.hasNext()) {
             System.out.println(transactions.next());
         }
@@ -79,6 +90,7 @@ public class TestHttpRequestProcess {
     void download(String url, String file) throws Exception {
         HttpRequestProcess httpRequestProcess = new HttpRequestProcess();
         httpRequestProcess.setCookieManager(cookieManager);
+        httpRequestProcess.setRedirectManager(redirectManager);
         httpRequestProcess.setExceptionHandler(httpExceptionHandlerPrint);
 
         httpRequestProcess.setUrl(new HttpUrl(url.getBytes()));
@@ -92,7 +104,7 @@ public class TestHttpRequestProcess {
         FileOutputStream fileOutputStream = new FileOutputStream(fileName);
         httpRequestProcess.setOutputStream(fileOutputStream);
         httpRequestProcess.run();
-        Iterator<HttpTransaction> transactions = httpRequestProcess.getTransactions();
+        Iterator<HttpTransaction> transactions = httpRequestProcess.transactionsIterator();
         while (transactions.hasNext()) {
             System.out.println(transactions.next());
         }

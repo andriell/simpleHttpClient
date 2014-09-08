@@ -17,6 +17,10 @@ public class CookieManagerSerial implements CookieManager {
     // User, domain, HttpCookie
     TreeMap<String, TreeMap<Domain, HashSet<Cookie>>> data = new TreeMap<String, TreeMap<Domain, HashSet<Cookie>>>();
 
+    public CookieManagerSerial(File file) throws ParseException, IOException, ClassNotFoundException, IndexOutOfBoundsException {
+        this.file = file;
+    }
+
     public CookieManagerSerial(String fileName) throws ParseException, IOException, ClassNotFoundException, IndexOutOfBoundsException {
         file = new File(fileName);
     }
@@ -30,6 +34,7 @@ public class CookieManagerSerial implements CookieManager {
         ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
         byte[][][] dataLoad = (byte[][][]) objectInputStream.readObject();
         objectInputStream.close();
+        fileInputStream.close();
 
         for (byte[][] bytes: dataLoad) {
             if (bytes.length != 2) {
@@ -174,7 +179,10 @@ public class CookieManagerSerial implements CookieManager {
         FileOutputStream fileOutputStream = new FileOutputStream(file);
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
         objectOutputStream.writeObject(dataToSave);
+        objectOutputStream.flush();
         objectOutputStream.close();
+        fileOutputStream.flush();
+        fileOutputStream.close();
         return l;
     }
 
