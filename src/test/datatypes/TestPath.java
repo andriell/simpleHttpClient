@@ -1,4 +1,4 @@
-package test.http.datatypes;
+package test.datatypes;
 
 import http.datatypes.Path;
 

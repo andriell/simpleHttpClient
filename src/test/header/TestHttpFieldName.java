@@ -1,4 +1,4 @@
-package test.http.header;
+package test.header;
 
 import http.header.HttpFieldName;
 import http.header.HttpHeaders;

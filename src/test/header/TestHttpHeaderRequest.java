@@ -1,4 +1,4 @@
-package test.http.header;
+package test.header;
 
 import http.cookie.Cookie;
 import http.datatypes.HttpRequestMethod;

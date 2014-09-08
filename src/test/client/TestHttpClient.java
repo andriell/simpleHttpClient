@@ -1,4 +1,4 @@
-package test.http.client;
+package test.client;
 
 import http.client.HttpExceptionHandlerPrint;
 import http.client.HttpTransaction;

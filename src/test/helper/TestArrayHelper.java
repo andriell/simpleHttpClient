@@ -1,4 +1,4 @@
-package test.http.helper;
+package test.helper;
 
 import http.helper.ArrayHelper;
 

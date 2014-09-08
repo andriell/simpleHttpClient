@@ -1,4 +1,4 @@
-package test.http.cookie;
+package test.cookie;
 
 import http.cookie.Cookie;
 
