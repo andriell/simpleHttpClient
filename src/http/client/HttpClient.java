@@ -83,7 +83,7 @@ public class HttpClient {
                 data = new byte[0];
             }
 
-            byte[] contentType = client.getLastTransaction().getHeaderResponse().get(HttpHeaders.contentType);
+            byte[] contentType = client.getHeaderResponse().get(HttpHeaders.contentType);
             if (contentType != null) {
                 String charsetName = ContentType.getCharset(contentType);
                 if (charsetName != null) {

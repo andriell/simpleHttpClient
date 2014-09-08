@@ -31,12 +31,12 @@ public class HttpRequestProcess implements Runnable {
 
     private HttpUrl url;
     private HttpHeaderRequest headerRequest = new HttpHeaderRequest();
+    private HttpHeaderOutputStream headerResponse;
     private OutputStream userOutputStream;
     private String user = "";
     private int maxRequest = 6;
+    private int requestCount = 0;
 
-    ArrayList<HttpTransaction> transactions = new ArrayList<HttpTransaction>(maxRequest);
-    HttpTransaction lastTransaction = null;
 
     @Override
     public void run() {
@@ -49,21 +49,13 @@ public class HttpRequestProcess implements Runnable {
         }
     }
 
-    public void buildHeaderRequest() {
-        if (url != null) {
-            headerRequest.url(url);
-        }
-        if (cookieManager != null && url != null) {
-            Iterable<Cookie> cookies = cookieManager.get(user, url.getDomain(), url.getPath(), url.getScheme() == HttpUrlSheme.https);
-            for (Cookie cookie: cookies) {
-                headerRequest.addCookie(cookie);
-            }
-        }
-    }
-
     private void query() throws Exception {
         if (url == null) {
             throw new NullPointerException("Url is null");
+        }
+        requestCount++;
+        if (requestCount > maxRequest) {
+            throw new Exception("Too many redirects " + requestCount + " Max=" + maxRequest);
         }
 
         // Перемещен ли этот URL
@@ -75,19 +67,21 @@ public class HttpRequestProcess implements Runnable {
         socketOutputStream = socket.getOutputStream();
         socketInputStream = socket.getInputStream();
 
-        lastTransaction = new HttpTransaction();
-        lastTransaction.setHeaderRequest(headerRequest);
-        buildHeaderRequest();
+        headerRequest.url(url);
+        if (cookieManager != null && url != null) {
+            Iterable<Cookie> cookies = cookieManager.get(user, url.getDomain(), url.getPath(), url.getScheme() == HttpUrlSheme.https);
+            for (Cookie cookie: cookies) {
+                headerRequest.addCookie(cookie);
+            }
+        }
         socketOutputStream.write(headerRequest.getBytes());
 
-        HttpHeaderOutputStream headerResponse = new HttpHeaderOutputStream(1000, 1000);
+        headerResponse = new HttpHeaderOutputStream(1000, 1000);
         // Читаем заголовок ответа
         while (! headerResponse.isEnd()) {
             headerResponse.write(socketInputStream.read());
         }
 
-        lastTransaction.setHeaderResponse(headerResponse);
-        transactions.add(lastTransaction);
 
         // Записываем куки
         if (cookieManager != null) {
@@ -98,17 +92,13 @@ public class HttpRequestProcess implements Runnable {
         }
 
         // Редиректы
-        if (transactions.size() > maxRequest) {
-            socket.close();
-            return;
-        }
         HttpUrl location = null;
         if (headerResponse.getStatusCode() == 301) { // Постоянно перемещен
             location = new HttpUrl(headerResponse.get(HttpHeaders.location));
             if (redirectManager != null) {
                 redirectManager.set(url, location);
             }
-        } else if (headerResponse.getStatusCode() == 302) {// Временно перемещен
+        } else if (headerResponse.getStatusCode() == 302) { // Временно перемещен
             location = new HttpUrl(headerResponse.get(HttpHeaders.location));
         }
         if (location != null) {
@@ -235,12 +225,8 @@ public class HttpRequestProcess implements Runnable {
         this.cookieManager = cookieManager;
     }
 
-    public HttpTransaction getLastTransaction() {
-        return lastTransaction;
-    }
-
-    public Iterator<HttpTransaction> transactionsIterator() {
-        return transactions.iterator();
+    public HttpHeaderOutputStream getHeaderResponse() {
+        return headerResponse;
     }
 
     public RedirectManager getRedirectManager() {
