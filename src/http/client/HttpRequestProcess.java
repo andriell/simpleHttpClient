@@ -29,9 +29,8 @@ public class HttpRequestProcess implements Runnable {
     private HttpExceptionHandler exceptionHandler = null;
     private CookieManager cookieManager = null;
 
-    private HttpRequestMethod method = HttpRequestMethod.GET;
     private HttpUrl url;
-    private HttpHeaderRequest headerRequest = new HttpHeaderRequest(method);
+    private HttpHeaderRequest headerRequest = new HttpHeaderRequest();
     private OutputStream userOutputStream;
     private String user = "";
     private int maxRequest = 6;
@@ -115,7 +114,7 @@ public class HttpRequestProcess implements Runnable {
         if (location != null) {
             url = location;
             socket.close();
-            run();
+            query();
             return;
         }
 
@@ -128,7 +127,7 @@ public class HttpRequestProcess implements Runnable {
             headerResponse.getStatusCode() < 200
             || headerResponse.getStatusCode() == 204
             || headerResponse.getStatusCode() == 304
-            || method.equals(HttpRequestMethod.HEAD)
+            || headerRequest.getMethod().equals(HttpRequestMethod.HEAD)
         ) {
             socket.close();
             return;
@@ -189,12 +188,11 @@ public class HttpRequestProcess implements Runnable {
     }
 
     public HttpRequestMethod getMethod() {
-        return method;
+        return headerRequest.getMethod();
     }
 
     public void setMethod(HttpRequestMethod method) {
         headerRequest.setMethod(method);
-        this.method = method;
     }
 
     public HttpUrl getUrl() {
