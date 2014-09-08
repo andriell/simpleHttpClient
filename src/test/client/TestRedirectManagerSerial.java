@@ -1,6 +1,6 @@
 package test.client;
 
-import http.client.CircularityException;
+import http.client.LoopException;
 import http.client.RedirectManagerSerial;
 import http.datatypes.HttpUrl;
 
@@ -38,16 +38,15 @@ public class TestRedirectManagerSerial {
         try {
             redirectManager.set(d, a2);
             System.out.println("Error.");
-        } catch (CircularityException e) {
+        } catch (LoopException e) {
             System.out.println("Ok. " + e.getMessage());
         }
 
         try {
-            redirectManager.setFindCircularity(false);
+            redirectManager.setFindLoop(false);
             redirectManager.set(d, a2);
             System.out.println("Ok.");
-
-        } catch (CircularityException e) {
+        } catch (LoopException e) {
             System.out.println("Error.");
         }
 

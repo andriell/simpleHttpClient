@@ -11,7 +11,7 @@ import java.util.TreeMap;
  * Created by arybalko on 08.09.14.
  */
 public class RedirectManagerSerial implements RedirectManager {
-    protected boolean findCircularity = true;
+    protected boolean findLoop = true;
     protected File file;
 
     private TreeMap<HttpUrl, HttpUrl> data = new TreeMap<HttpUrl, HttpUrl>();
@@ -41,7 +41,7 @@ public class RedirectManagerSerial implements RedirectManager {
             }
             try {
                 set(new HttpUrl(bytes[0]), new HttpUrl(bytes[1]));
-            } catch (CircularityException e) {}
+            } catch (LoopException e) {}
         }
     }
 
@@ -83,18 +83,18 @@ public class RedirectManagerSerial implements RedirectManager {
     }
 
     @Override
-    public void set(HttpUrl from, HttpUrl to) throws CircularityException {
+    public void set(HttpUrl from, HttpUrl to) throws LoopException {
         if (from.equals(to)) {
             return;
         }
-        if (findCircularity && findCircularity(from, to)) {
-            throw new CircularityException(from, to);
+        if (findLoop && findLoop(from, to)) {
+            throw new LoopException(from, to);
         }
         data.put(from, to);
     }
 
     //<editor-fold desc="Getters and Setters">
-    private boolean findCircularity(HttpUrl start, HttpUrl to) {
+    private boolean findLoop(HttpUrl start, HttpUrl to) {
         HttpUrl toCurrent = data.get(to);
         if (toCurrent == null) {
             return false;
@@ -102,15 +102,15 @@ public class RedirectManagerSerial implements RedirectManager {
         if (toCurrent.equals(start)) {
             return true;
         }
-        return findCircularity(start, toCurrent);
+        return findLoop(start, toCurrent);
     }
 
-    public boolean isFindCircularity() {
-        return findCircularity;
+    public boolean isFindLoop() {
+        return findLoop;
     }
 
-    public void setFindCircularity(boolean findCircularity) {
-        this.findCircularity = findCircularity;
+    public void setFindLoop(boolean findLoop) {
+        this.findLoop = findLoop;
     }
 
     public File getFile() {
