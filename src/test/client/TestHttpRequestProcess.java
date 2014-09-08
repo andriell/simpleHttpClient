@@ -92,9 +92,10 @@ public class TestHttpRequestProcess {
         httpRequestProcess.setCookieManager(cookieManager);
         httpRequestProcess.setRedirectManager(redirectManager);
         httpRequestProcess.setExceptionHandler(httpExceptionHandlerPrint);
+        TestEventHandler handler = new TestEventHandler("Complite");
         httpRequestProcess.beforeRedirect(new TestEventHandler("Redirect"));
-        httpRequestProcess.beforeComplite(new TestEventHandler("Complite"));
-        httpRequestProcess.beforeComplite(new TestEventHandler("Complite 2"));
+        httpRequestProcess.beforeComplite(handler);
+        httpRequestProcess.beforeComplite(handler);
 
         httpRequestProcess.setUrl(new HttpUrl(url.getBytes()));
 
