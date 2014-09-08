@@ -1,12 +1,9 @@
 package http.client;
 
-import http.cookie.Cookie;
-import http.datatypes.Domain;
 import http.datatypes.HttpUrl;
 
 import java.io.*;
 import java.text.ParseException;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -91,9 +88,6 @@ public class RedirectManagerSerial implements RedirectManager {
     public void set(HttpUrl from, HttpUrl to) throws CircularityException {
         if (from.equals(to)) {
             return;
-        }
-        if (data.containsKey(to)) {
-            throw new CircularityException();
         }
         data.put(from, to);
     }
