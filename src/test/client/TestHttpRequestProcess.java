@@ -14,7 +14,7 @@ import java.io.FileOutputStream;
  * Created by arybalko on 04.09.14.
  */
 public class TestHttpRequestProcess {
-    ConnectionManager connectionManager;
+    SocketFactory socketFactory;
     CookieManagerSerial cookieManager;
     HttpExceptionHandlerPrint httpExceptionHandlerPrint;
     RedirectManagerSerial redirectManager;
@@ -30,7 +30,7 @@ public class TestHttpRequestProcess {
     void go() throws Exception {
         //HttpHeaderRequest.setUserAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.103 Safari/537.36");
 
-        connectionManager = new DefaultConnectionManager();
+        socketFactory = new DefaultSoketFactory();
 
         String fileCookie = System.getProperty("user.dir") + File.separator + "data" + File.separator + "TestHttpRequestProcess-cookie.bin";
         cookieManager = new CookieManagerSerial(fileCookie);
@@ -61,7 +61,7 @@ public class TestHttpRequestProcess {
 
     void print(String url) throws Exception {
         HttpRequestProcess httpRequestProcess = new HttpRequestProcess();
-        httpRequestProcess.setConnectionManager(connectionManager);
+        httpRequestProcess.setSocketFactory(socketFactory);
         httpRequestProcess.setCookieManager(cookieManager);
         httpRequestProcess.setRedirectManager(redirectManager);
         httpRequestProcess.setExceptionHandler(httpExceptionHandlerPrint);
@@ -90,7 +90,7 @@ public class TestHttpRequestProcess {
 
     void download(String url, String file) throws Exception {
         HttpRequestProcess httpRequestProcess = new HttpRequestProcess();
-        httpRequestProcess.setConnectionManager(connectionManager);
+        httpRequestProcess.setSocketFactory(socketFactory);
         httpRequestProcess.setCookieManager(cookieManager);
         httpRequestProcess.setRedirectManager(redirectManager);
         httpRequestProcess.setExceptionHandler(httpExceptionHandlerPrint);

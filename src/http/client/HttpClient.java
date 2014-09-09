@@ -17,7 +17,7 @@ import java.io.FileOutputStream;
  * Created by Андрей on 07.09.14.
  */
 public class HttpClient {
-    private ConnectionManager connectionManager = new DefaultConnectionManager();
+    private SocketFactory socketFactory = new DefaultSoketFactory();
     private HttpExceptionHandler exceptionHandler = null;
     private CookieManager cookieManager = null;
     private RedirectManager redirectManager = null;
@@ -34,7 +34,7 @@ public class HttpClient {
 
     public HttpRequestProcess newRequest() {
         HttpRequestProcess httpRequestProcess = new HttpRequestProcess();
-        httpRequestProcess.setConnectionManager(connectionManager);
+        httpRequestProcess.setSocketFactory(socketFactory);
         httpRequestProcess.setCookieManager(cookieManager);
         httpRequestProcess.setExceptionHandler(exceptionHandler);
         httpRequestProcess.setRedirectManager(redirectManager);
@@ -128,12 +128,12 @@ public class HttpClient {
     //</editor-fold>
 
     //<editor-fold desc="Getters and Setters">
-    public ConnectionManager getConnectionManager() {
-        return connectionManager;
+    public SocketFactory getSocketFactory() {
+        return socketFactory;
     }
 
-    public void setConnectionManager(ConnectionManager connectionManager) {
-        this.connectionManager = connectionManager;
+    public void setSocketFactory(SocketFactory socketFactory) {
+        this.socketFactory = socketFactory;
     }
 
     public CookieManager getCookieManager() {
