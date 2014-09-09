@@ -98,6 +98,10 @@ public class CookieManagerSerial implements CookieManager {
                     cookieSet.remove(cookie);
                     continue;
                 }
+                CookieDomain cookieDomain = cookie.getDomain();
+                if (cookieDomain != null && !cookieDomain.forDomain(domain)) {
+                    continue;
+                }
                 if (!cookie.getPath().isSubPath(path, true)) {
                     continue;
                 }

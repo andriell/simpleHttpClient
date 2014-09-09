@@ -45,10 +45,10 @@ public class TestCookieManagerSerial {
         cookieManager.set(user1, domain0, new Cookie("LID=31d4d96e407aad42; Domain=.example.com; Path=/a;".getBytes()));
         cookieManager.set(user1, domain0, new Cookie("LID=31d4d96e407aad42; Domain=.example.com; Path=/ab;".getBytes()));
         cookieManager.set(user1, domain0, new Cookie("LID=31d4d96e407aad42; Domain=.example.com; Path=/a/b;".getBytes()));
-        cookieManager.set(user1, domain0, new Cookie("ruPID=31d4d96e407aad42; Domain=ru.example.com; Path=/;".getBytes()));
-        cookieManager.set(user1, domain0, new Cookie("ruLID=31d4d96e407aad42; Domain=ru.example.com; Path=/;".getBytes()));
+        cookieManager.set(user1, subdomain1, new Cookie("ruPID=31d4d96e407aad42; Domain=ru.example.com; Path=/;".getBytes()));
+        cookieManager.set(user1, subdomain1, new Cookie("ruLID=31d4d96e407aad42; Domain=ru.example.com; Path=/;".getBytes()));
         cookieManager.set(user1, domain0, new Cookie("lang=en-US; Domain=.example.com; Path=/; Expires=Wed, 09 Jun 2021 10:18:14 GMT".getBytes()));
-        cookieManager.set(user1, domain0, new Cookie("lang=en-US; Domain=ru.example.com; Path=/a; Expires=Wed, 09 Jun 2021 10:18:14 GMT".getBytes()));
+        cookieManager.set(user1, subdomain1, new Cookie("lang=en-US; Domain=ru.example.com; Path=/a; Expires=Wed, 09 Jun 2021 10:18:14 GMT".getBytes()));
         cookieManager.set(user2, domain0, new Cookie("lang=en-US; Domain=.example.com; Path=/; Expires=Wed, 09 Jun 2021 10:18:14 GMT".getBytes()));
 
         cookieManager.printAll();
