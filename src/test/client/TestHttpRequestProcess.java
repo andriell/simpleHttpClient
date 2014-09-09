@@ -32,7 +32,9 @@ public class TestHttpRequestProcess {
         HttpHeaderRequest.setUserAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.103 Safari/537.36");
 
         httpSocketFactory = new HttpSoketFactoryDefault();
-        httpSocketFactory.setProxy("10.250.1.6", 3128);
+        //httpSocketFactory.setProxy("10.250.1.6", 3128);
+        //System.setProperty("http.proxyHost", "10.250.1.6");
+        //System.setProperty("http.proxyPort", "3128");
 
         String fileCookie = System.getProperty("user.dir") + File.separator + "data" + File.separator + "TestHttpRequestProcess-cookie.bin";
         cookieManager = new CookieManagerSerial(fileCookie);
@@ -51,12 +53,13 @@ public class TestHttpRequestProcess {
         httpExceptionHandlerPrint = new HttpExceptionHandlerPrint();
 
         print("http://glcfapp.glcf.umd.edu:8080/esdi/");
-        //print("http://google.ru/");
-        //print("http://ya.ru/");
-        //print("http://vk.com/");
+        print("http://ikus.pesc.ru:8080/IKUSUser/");
+        print("http://google.ru/");
+        print("http://ya.ru/");
+        print("http://vk.com/");
 
-        //download("http://vk.com/", "vk.html");
-        //download("http://i.msdn.microsoft.com/dynimg/IC52612.gif", "IC52612.gif");
+        download("http://vk.com/", "vk.html");
+        download("http://i.msdn.microsoft.com/dynimg/IC52612.gif", "IC52612.gif");
 
         System.out.println("Сохранено кук " + cookieManager.save());
         System.out.println("Сохранено редиректов " + redirectManager.save());
@@ -68,11 +71,11 @@ public class TestHttpRequestProcess {
         httpRequestProcess.setCookieManager(cookieManager);
         httpRequestProcess.setRedirectManager(redirectManager);
         httpRequestProcess.setExceptionHandler(httpExceptionHandlerPrint);
-        httpRequestProcess.beforeRequest(new TestEventHandler("Request"));
-        httpRequestProcess.afterResponseHeaders(new TestEventHandler("afterResponseHeaders"));
-        httpRequestProcess.beforeRedirect(new TestEventHandler("Redirect"));
-        httpRequestProcess.beforeComplite(new TestEventHandler("Complite"));
-        httpRequestProcess.beforeComplite(new TestEventHandler("Complite 2"));
+        //httpRequestProcess.beforeRequest(new TestEventHandler("Request"));
+        httpRequestProcess.afterResponseHeaders(new TestEventHandler(""));
+        //httpRequestProcess.beforeRedirect(new TestEventHandler("Redirect"));
+        //httpRequestProcess.beforeComplite(new TestEventHandler("Complite"));
+        //httpRequestProcess.beforeComplite(new TestEventHandler("Complite 2"));
 
         httpRequestProcess.setUrl(new HttpUrl(url.getBytes()));
 

@@ -16,14 +16,14 @@ public class TestCookieManagerSerial {
 
     public static void main(String[] args) {
         try {
-            new TestCookieManagerSerial().test1();
+            new TestCookieManagerSerial().go();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void test1() throws Exception {
-        String fileName = System.getProperty("user.dir") + File.separator + "data" + File.separator + "test1.bin";
+    public void go() throws Exception {
+        String fileName = System.getProperty("user.dir") + File.separator + "data" + File.separator + "go.bin";
         File file = new File(fileName);
         if (file.isFile()) {
             file.delete();

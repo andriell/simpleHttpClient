@@ -53,7 +53,7 @@ public class CookieDomain {
             }
 
             boolean c46 = false;
-            while(0 < l) {
+            while(0 < l && 0 < lDomain) {
                 l--;
                 lDomain--;
                 if (data[l] != dataDomain[lDomain]) {
@@ -63,7 +63,7 @@ public class CookieDomain {
                     c46 = true;
                 }
             }
-            if (lDomain < 0) {
+            if (lDomain == 0) {
                 return c46;
             }
             return dataDomain[lDomain] == C.FULL_STOP && c46;
@@ -73,7 +73,7 @@ public class CookieDomain {
             }
 
             boolean c46 = false;
-            while(0 <= l) {
+            while(0 < l) {
                 l--;
                 if (dataDomain[l] != data[l]) {
                     return false;
