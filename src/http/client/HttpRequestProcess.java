@@ -79,7 +79,7 @@ public class HttpRequestProcess implements Runnable {
             url = redirectManager.get(url);
         }
 
-        socket = httpSocketFactory.socket(url);
+        socket = httpSocketFactory.socket(this);
         socketOutputStream = socket.getOutputStream();
         socketInputStream = socket.getInputStream();
 
