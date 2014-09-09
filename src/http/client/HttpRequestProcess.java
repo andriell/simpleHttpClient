@@ -24,6 +24,7 @@ public class HttpRequestProcess implements Runnable {
     private OutputStream socketOutputStream;
     private InputStream socketInputStream;
 
+    private ConnectionManager connectionManager = null;
     private HttpExceptionHandler exceptionHandler = null;
     private CookieManager cookieManager = null;
     private RedirectManager redirectManager = null;
@@ -61,6 +62,9 @@ public class HttpRequestProcess implements Runnable {
         if (url == null) {
             throw new NullPointerException("Url is null");
         }
+        if (connectionManager == null) {
+            throw new NullPointerException("ConnectionManager is null");
+        }
         if (stop) {
             return;
         }
@@ -75,7 +79,7 @@ public class HttpRequestProcess implements Runnable {
             url = redirectManager.get(url);
         }
 
-        socket = SocketManager.get(url);
+        socket = connectionManager.connection(url);
         socketOutputStream = socket.getOutputStream();
         socketInputStream = socket.getInputStream();
 
@@ -243,6 +247,14 @@ public class HttpRequestProcess implements Runnable {
 
     public void setMethod(HttpRequestMethod method) {
         headerRequest.setMethod(method);
+    }
+
+    public ConnectionManager getConnectionManager() {
+        return connectionManager;
+    }
+
+    public void setConnectionManager(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
     }
 
     public HttpExceptionHandler getExceptionHandler() {

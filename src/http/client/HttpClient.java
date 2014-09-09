@@ -11,9 +11,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 /**
+ * TODO[] proxi
+ * TODO[] cache
+ * TODO[] events
  * Created by Андрей on 07.09.14.
  */
 public class HttpClient {
+    private ConnectionManager connectionManager = new DefaultConnectionManager();
     private HttpExceptionHandler exceptionHandler = null;
     private CookieManager cookieManager = null;
     private RedirectManager redirectManager = null;
@@ -30,6 +34,7 @@ public class HttpClient {
 
     public HttpRequestProcess newRequest() {
         HttpRequestProcess httpRequestProcess = new HttpRequestProcess();
+        httpRequestProcess.setConnectionManager(connectionManager);
         httpRequestProcess.setCookieManager(cookieManager);
         httpRequestProcess.setExceptionHandler(exceptionHandler);
         httpRequestProcess.setRedirectManager(redirectManager);
@@ -123,6 +128,14 @@ public class HttpClient {
     //</editor-fold>
 
     //<editor-fold desc="Getters and Setters">
+    public ConnectionManager getConnectionManager() {
+        return connectionManager;
+    }
+
+    public void setConnectionManager(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
+    }
+
     public CookieManager getCookieManager() {
         return cookieManager;
     }

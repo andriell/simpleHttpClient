@@ -1,12 +1,9 @@
 package test.client;
 
-import http.client.HttpEventHandler;
-import http.client.HttpExceptionHandlerPrint;
-import http.client.RedirectManagerSerial;
+import http.client.*;
 import http.cookie.CookieManagerSerial;
 import http.datatypes.ContentType;
 import http.datatypes.HttpUrl;
-import http.client.HttpRequestProcess;
 import http.header.HttpHeaders;
 import http.stream.output.HttpPartOutputStream;
 
@@ -17,6 +14,7 @@ import java.io.FileOutputStream;
  * Created by arybalko on 04.09.14.
  */
 public class TestHttpRequestProcess {
+    ConnectionManager connectionManager;
     CookieManagerSerial cookieManager;
     HttpExceptionHandlerPrint httpExceptionHandlerPrint;
     RedirectManagerSerial redirectManager;
@@ -31,6 +29,8 @@ public class TestHttpRequestProcess {
 
     void go() throws Exception {
         //HttpHeaderRequest.setUserAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.103 Safari/537.36");
+
+        connectionManager = new DefaultConnectionManager();
 
         String fileCookie = System.getProperty("user.dir") + File.separator + "data" + File.separator + "TestHttpRequestProcess-cookie.bin";
         cookieManager = new CookieManagerSerial(fileCookie);
@@ -48,7 +48,7 @@ public class TestHttpRequestProcess {
 
         httpExceptionHandlerPrint = new HttpExceptionHandlerPrint();
 
-        print("https://google.ru/");
+//        print("https://google.ru/");
         print("http://ya.ru/");
         print("http://vk.com/");
 
@@ -61,6 +61,7 @@ public class TestHttpRequestProcess {
 
     void print(String url) throws Exception {
         HttpRequestProcess httpRequestProcess = new HttpRequestProcess();
+        httpRequestProcess.setConnectionManager(connectionManager);
         httpRequestProcess.setCookieManager(cookieManager);
         httpRequestProcess.setRedirectManager(redirectManager);
         httpRequestProcess.setExceptionHandler(httpExceptionHandlerPrint);
@@ -89,6 +90,7 @@ public class TestHttpRequestProcess {
 
     void download(String url, String file) throws Exception {
         HttpRequestProcess httpRequestProcess = new HttpRequestProcess();
+        httpRequestProcess.setConnectionManager(connectionManager);
         httpRequestProcess.setCookieManager(cookieManager);
         httpRequestProcess.setRedirectManager(redirectManager);
         httpRequestProcess.setExceptionHandler(httpExceptionHandlerPrint);
