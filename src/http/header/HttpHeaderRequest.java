@@ -63,7 +63,7 @@ public class HttpHeaderRequest {
 
     public void url(HttpUrl url) {
         requestURI = url.domainPathParam();
-        set(HttpHeaders.host, url.getDomain().getBytes());
+        set(HttpHeaders.host, url.domainPort());
     }
 
     //<editor-fold desc="Getters and Setters Static">

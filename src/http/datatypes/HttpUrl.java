@@ -193,13 +193,36 @@ public class HttpUrl implements Comparable<HttpUrl> {
         return charset;
     }
 
+    public byte[] domainPort() {
+        int l = domain.length();
+        byte[] port = null;
+        if (this.port > 0) {
+            port = ArrayHelper.intToArry(this.port);
+            l += C.BS_COLON.length + port.length;
+        }
+
+        byte[] r = new byte[l];
+        l = 0;
+
+        System.arraycopy(domain.getBytes(), 0, r, l, domain.length());
+        l += domain.length();
+        if (port != null) {
+            System.arraycopy(C.BS_COLON, 0, r, l, C.BS_COLON.length);
+            l += C.BS_COLON.length;
+            System.arraycopy(port, 0, r, l, port.length);
+            l += port.length;
+        }
+
+        return r;
+    }
+
     public byte[] domainPathParam() {
         int l = scheme.name().length()
                 + C.BS_COLON_SS.length
                 + domain.length();
         byte[] port = null;
         if (this.port > 0) {
-            port = Integer.toString(this.port).getBytes();
+            port = ArrayHelper.intToArry(this.port);
             l += C.BS_COLON.length + port.length;
         }
         l += path.length();

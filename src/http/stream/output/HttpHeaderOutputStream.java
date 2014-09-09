@@ -115,7 +115,7 @@ public class HttpHeaderOutputStream extends OutputStream {
     }
 
     public byte[] rebuild() {
-        byte[] statusCode = Integer.toString(this.statusCode).getBytes();
+        byte[] statusCode = ArrayHelper.intToArry(this.statusCode);
         byte[] setCookie = HttpHeaders.setCookie.getBytes();
 
         int l = httpVersion.length + C.BS_SP.length + statusCode.length + C.BS_SP.length + reasonPhrase.length + C.BS_CRLF.length;
