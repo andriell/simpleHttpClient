@@ -12,7 +12,7 @@ import java.net.Socket;
  */
 public class DefaultSoketFactory implements SocketFactory {
     @Override
-    public synchronized Socket connection(HttpUrl url) throws IOException {
+    public synchronized Socket socket(HttpUrl url) throws IOException {
         if (url.getScheme().equals(HttpUrlSheme.https)) {
             SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
             // Насамом деле это класс SSLSocket

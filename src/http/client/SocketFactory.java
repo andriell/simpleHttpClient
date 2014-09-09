@@ -9,5 +9,5 @@ import java.net.Socket;
  * Created by arybalko on 09.09.14.
  */
 public interface SocketFactory {
-    public Socket connection(HttpUrl url) throws IOException;
+    public Socket socket(HttpUrl url) throws IOException;
 }
