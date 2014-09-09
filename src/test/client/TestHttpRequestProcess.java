@@ -50,7 +50,7 @@ public class TestHttpRequestProcess {
 
         httpExceptionHandlerPrint = new HttpExceptionHandlerPrint();
 
-        print("http://ikus.pesc.ru:8080/IKUSUser/");
+        print("http://glcfapp.glcf.umd.edu:8080/esdi/");
         //print("http://google.ru/");
         //print("http://ya.ru/");
         //print("http://vk.com/");

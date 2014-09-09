@@ -13,7 +13,7 @@ public interface CookieManager {
      * @param user
      * @param httpCookie
      */
-    public void set(String user, Cookie httpCookie);
+    public void set(String user, Domain domain, Cookie httpCookie);
 
     /**
      * Прочитать куки

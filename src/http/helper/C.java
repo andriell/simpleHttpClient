@@ -28,6 +28,9 @@ public class C {
     // "-"
     public static final byte MINUS = 45;
     public static final int I_MINUS = 45;
+    // "."
+    public static final byte FULL_STOP = 46;
+    public static final int I_FULL_STOP = 46;
     // "/"
     public static final byte SOLIDUS = 47;
     public static final int I_SOLIDUS = 47;

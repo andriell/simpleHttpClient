@@ -20,7 +20,7 @@ public class Cookie {
 
     // Дата когда кука закончит действие. Если не указана, то действие заканчивается в конце сессии
     private HttpDate expires = null;
-    private Domain domain = null;
+    private CookieDomain domain = null;
     private Path path = new Path(C.BS_SOLIDUS);
     private boolean secure = false;
     private boolean httpOnly  = false;
@@ -96,7 +96,7 @@ public class Cookie {
                 expires = new HttpDate();
                 expires.add(ArrayHelper.parseInt(val, 0) * 1000);
             } else if (ArrayHelper.equalIgnoreCase(C.BS_DOMAIN, key)) {
-                domain = new Domain(val);
+                domain = new CookieDomain(val);
             } else if (ArrayHelper.equalIgnoreCase(C.BS_PATH, key)) {
                 path = new Path(val);
             } else if (this.key == null && this.val == null) {
@@ -213,7 +213,7 @@ public class Cookie {
         return expires;
     }
 
-    public Domain getDomain() {
+    public CookieDomain getDomain() {
         return domain;
     }
 

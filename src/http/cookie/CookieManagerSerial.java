@@ -37,31 +37,38 @@ public class CookieManagerSerial implements CookieManager {
         fileInputStream.close();
 
         for (byte[][] bytes: dataLoad) {
-            if (bytes.length != 2) {
-                throw new IndexOutOfBoundsException("byte[][] Length != 2. Length = " + bytes.length);
+            if (bytes.length != 3) {
+                throw new IndexOutOfBoundsException("byte[][] Length != 3. Length = " + bytes.length);
             }
-            set(new String(bytes[0]), new Cookie(bytes[1]));
+            set(new String(bytes[0]), new Domain(bytes[1]), new Cookie(bytes[2]));
         }
     }
 
     @Override
-    public void set(String user, Cookie httpCookie) {
+    public void set(String user, Domain domain, Cookie httpCookie) {
         long now = new HttpDate().getTime();
         HttpDate expires = httpCookie.getExpires();
         if (expires != null && expires.getTime() <= now) {
             return;
         }
-        if (!data.containsKey(user)) {
-            data.put(user, new TreeMap<Domain, HashSet<Cookie>>());
+        CookieDomain cookieDomain = httpCookie.getDomain();
+        if (cookieDomain != null && !cookieDomain.forDomain(domain)) {
+            return;
         }
-        TreeMap<Domain, HashSet<Cookie>> dataUser = data.get(user);
 
-        Domain domain = httpCookie.getDomain();
-
-        if (!dataUser.containsKey(domain)) {
-            dataUser.put(domain, new HashSet<Cookie>());
+        TreeMap<Domain, HashSet<Cookie>> userMap = data.get(user);
+        if (userMap == null) {
+            userMap = new TreeMap<Domain, HashSet<Cookie>>();
+            data.put(user, userMap);
         }
-        dataUser.get(domain).add(httpCookie);
+
+        HashSet<Cookie> domainSet = userMap.get(domain);
+        if (domainSet == null) {
+            domainSet = new HashSet<Cookie>();
+            userMap.put(domain, domainSet);
+        }
+
+        domainSet.add(httpCookie);
     }
 
     @Override
@@ -80,7 +87,7 @@ public class CookieManagerSerial implements CookieManager {
              * subdomain cs.example.com
              * subdomain www.example.com
              */
-            if (!domainEntry.getKey().isSubDomain(domain)) {
+            if (!domainEntry.getKey().isSubdomain(domain, true)) {
                 continue;
             }
             HashSet<Cookie> cookieSet = domainEntry.getValue();
@@ -165,12 +172,13 @@ public class CookieManagerSerial implements CookieManager {
         int i = 0;
         // User, domain, HttpCookie
         for(Map.Entry<String, TreeMap<Domain, HashSet<Cookie>>> userEntry: data.entrySet()) {
-            TreeMap<Domain, HashSet<Cookie>> domainMap = userEntry.getValue();
-            for(HashSet<Cookie> cookieCollection: domainMap.values()) {
-                for(Cookie cookie: cookieCollection) {
-                    dataToSave[i] = new byte[2][];
+            for(Map.Entry<Domain, HashSet<Cookie>> domainEntry: userEntry.getValue().entrySet()) {
+                Domain domain = domainEntry.getKey();
+                for(Cookie cookie: domainEntry.getValue()) {
+                    dataToSave[i] = new byte[3][];
                     dataToSave[i][0] = userEntry.getKey().getBytes();
-                    dataToSave[i][1] = cookie.buildSetCookie();
+                    dataToSave[i][1] = domain.getBytes();
+                    dataToSave[i][2] = cookie.buildSetCookie();
                     i++;
                 }
             }
@@ -189,10 +197,12 @@ public class CookieManagerSerial implements CookieManager {
     public void printAll() {
         // Выясняем длинну
         // User, domain, HttpCookie
-        for(TreeMap<Domain, HashSet<Cookie>> domainCollection: data.values()) {
-            for(HashSet<Cookie> cookieCollection: domainCollection.values()) {
-                for(Cookie cookie: cookieCollection) {
-                    System.out.println(cookie);
+        for(Map.Entry<String, TreeMap<Domain, HashSet<Cookie>>> userEntry: data.entrySet()) {
+            String user = userEntry.getKey();
+            for(Map.Entry<Domain, HashSet<Cookie>> domainEntry: userEntry.getValue().entrySet()) {
+                Domain domain = domainEntry.getKey();
+                for(Cookie cookie: domainEntry.getValue()) {
+                    System.out.println(user + "\t" + domain + "\t" + cookie);
                 }
             }
         }

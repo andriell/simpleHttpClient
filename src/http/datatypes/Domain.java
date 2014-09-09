@@ -1,6 +1,7 @@
 package http.datatypes;
 
 import http.helper.ArrayHelper;
+import http.helper.C;
 
 import java.util.Arrays;
 
@@ -8,9 +9,6 @@ import java.util.Arrays;
  * Created by arybalko on 26.08.14.
  */
 public class Domain implements Comparable<Domain> {
-    // "."
-    private static byte FULL_STOP = 46;
-
     private byte[] data;
 
     public Domain(byte[] data) {
@@ -23,68 +21,36 @@ public class Domain implements Comparable<Domain> {
      *
      * domain example.com
      * subdomain example.com
-     *
-     * domain .example.com
-     * subdomain example.com
      * subdomain www.example.com
      * subdomain cs.example.com
      * @param subdomain
      * @return
      */
-    public boolean isSubDomain(Domain subdomain) {
+    public boolean isSubdomain(Domain subdomain, boolean orEqual) {
         if (data == null || subdomain.data == null) {
             return false;
         }
-        // субдомен не должен начанаться с точки
-        if (subdomain.data[0] == 46) {
+
+        int lDomain = data.length;
+        int lSubdomain = subdomain.data.length;
+
+        if ((lSubdomain < lDomain) || (lSubdomain == lDomain && !orEqual)) {
             return false;
         }
 
-        // точка в начале домена означает, что можно отдавать информацию всем поддоменам этого домена
-        if (data[0] == FULL_STOP) {
-            int lDomain = data.length;
-            int lSubdomain = subdomain.data.length;
-
-            if (lSubdomain < lDomain - 1) {
-                return false;
-            }
-
+        while(0 < lDomain) {
             lDomain--;
             lSubdomain--;
-            boolean c46 = false;
-            while(0 < lDomain) {
-                if (data[lDomain] != subdomain.data[lSubdomain]) {
-                    return false;
-                }
-                if (data[lDomain] == FULL_STOP) {
-                    c46 = true;
-                }
-                lDomain--;
-                lSubdomain--;
-            }
-            if (lSubdomain < 0) {
-                return c46;
-            }
-            return subdomain.data[lSubdomain] == FULL_STOP && c46;
-        } else {
-            if (this == subdomain) {
-                return true;
-            }
-            int length = data.length;
-            if (subdomain.data.length != length)
+            if (data[lDomain] != subdomain.data[lSubdomain]) {
                 return false;
-
-            boolean c46 = false;
-            for (int i=0; i<length; i++) {
-                if (subdomain.data[i] != data[i]) {
-                    return false;
-                }
-                if (data[i] == FULL_STOP) {
-                    c46 = true;
-                }
             }
-            return c46;
         }
+
+        if (lSubdomain == lDomain) {
+            return orEqual;
+        }
+        lSubdomain--;
+        return subdomain.data[lSubdomain] == C.FULL_STOP;
     }
 
     public int length() {

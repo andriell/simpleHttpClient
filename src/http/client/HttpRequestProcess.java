@@ -116,7 +116,7 @@ public class HttpRequestProcess implements Runnable {
         if (cookieManager != null) {
             Iterator<byte[]> cookies = headerResponse.cookieIterator();
             while (cookies.hasNext()) {
-                cookieManager.set(user, new Cookie(cookies.next()));
+                cookieManager.set(user, url.getDomain(), new Cookie(cookies.next()));
             }
         }
 
