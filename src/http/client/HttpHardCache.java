@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.SimpleTimeZone;
 
 /**
  * Created by arybalko on 10.09.14.
@@ -62,24 +63,27 @@ public class HttpHardCache {
 
     public byte[] get(HttpRequestProcess client) throws IOException {
         if (!client.getMethod().equals(HttpRequestMethod.GET)) {
+
             return null;
         }
         CacheFile cache = fileCache(client);
-        File fileCache = new File(cache.fullPath);
-        if (fileCache == null) {
+        if (cache.fullPath == null) {
             return null;
         }
+        File fileCache = new File(cache.fullPath);
+
         if (!fileCache.isFile()) {
             return null;
         }
         byte[] data = Files.readAllBytes(fileCache.toPath());
-        /*int time = ArrayHelper.parseInt(data, 0, 7, 10, 0);
+        int time = dataTime.get(cache.fullPath);
         System.out.println(time);
         System.out.println(time());
         if (time < time()) {
             fileCache.delete();
+            dataTime.remove(cache.fullPath);
             return null;
-        }*/
+        }
         return data;
     }
 
@@ -87,20 +91,19 @@ public class HttpHardCache {
         if (!client.getMethod().equals(HttpRequestMethod.GET)) {
             return;
         }
+        CacheFile cacheFile = fileCache(client);
 
-        File fileCache = fileCache(client);
-        if (fileCache == null) {
+        if (cacheFile.dir == null) {
             return;
         }
-        if (fileCache.isFile()) {
+        File file = new File(dir, cacheFile.fullPath);
+        if (file.isFile()) {
             return;
         }
-        fileCache.getParentFile().mkdirs();
+        new File(dir, cacheFile.dir).mkdirs();
 
-        byte[] time = ArrayHelper.intToArry((time() + timeMin));
-
-        FileOutputStream output = new FileOutputStream(fileCache);
-        //output.write(time);
+        dataTime.put(cacheFile.fullPath, time() + timeMin);
+        FileOutputStream output = new FileOutputStream(file);
         output.write(data);
         output.close();
     }
@@ -114,7 +117,7 @@ public class HttpHardCache {
         String dir;
 
         private CacheFile(String dir, String file) {
-            this.fullPath = dir + file;
+            this.fullPath = dir + File.separator + file;
             this.dir = dir;
         }
     }
