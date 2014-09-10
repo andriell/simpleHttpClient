@@ -1,5 +1,7 @@
 package http.helper;
 
+import java.security.MessageDigest;
+
 /**
  * Created by arybalko on 05.09.14.
  */

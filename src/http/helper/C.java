@@ -46,6 +46,9 @@ public class C {
     // "="
     public static final byte EQUALS = 61;
     public static final int I_EQUALS = 61;
+    // "\"
+    public static final byte REVERSE_SOLIDUS = 92;
+    public static final int I_REVERSE_SOLIDUS = 92;
 
     // " "
     public static final byte[] BS_SP = {32};

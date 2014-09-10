@@ -83,7 +83,7 @@ public class HttpClient {
     }
     //</editor-fold>
 
-    //<editor-fold desc="getString">
+    //<editor-fold desc="get">
     public String getString(HttpRequestProcess client) {
         try {
             HttpPartOutputStream httpPartOutputStream = new HttpPartOutputStream();
