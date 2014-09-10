@@ -10,6 +10,8 @@ import http.stream.output.HttpPartOutputStream;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 
 /**
  * Created by arybalko on 04.09.14.
@@ -32,7 +34,8 @@ public class TestHttpRequestProcess {
         HttpHeaderRequest.setUserAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.103 Safari/537.36");
 
         httpSocketFactory = new HttpSoketFactoryDefault();
-        //httpSocketFactory.setProxy("10.250.1.6", 3128);
+        // http://hideme.ru/proxy-list/?maxtime=100&type=hs
+        httpSocketFactory.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("92.50.194.162", 3128)));
         //System.setProperty("http.proxyHost", "10.250.1.6");
         //System.setProperty("http.proxyPort", "3128");
 
