@@ -23,7 +23,7 @@ public class TestProxi {
     }
 
     public void go() throws Exception {
-        HttpUrl url = new HttpUrl("http://www.google.ru");
+        HttpUrl url = new HttpUrl("https://www.google.ru");
         System.out.println(url.getDomain());
         System.out.println(url.getPort());
         Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("10.250.1.6", 3128));
@@ -33,12 +33,12 @@ public class TestProxi {
         SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
         // "10.250.1.6", 3128
         // url.getDomain().toString(), url.getPort()
-        //socket = (SSLSocket) sslsocketfactory.createSocket(socket, url.getDomain().toString(), url.getPort(), true);
+        socket = (SSLSocket) sslsocketfactory.createSocket(socket, url.getDomain().toString(), url.getPort(), true);
 
         String header = "GET / HTTP/1.1\r\n" +
                 "Host: www.google.ru\r\n" +
                 "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\r\n" +
-                "accept-encoding: gzip,deflate\r\n" +
+                "accept-encoding: deflate\r\n" +
                 "accept-language: ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4\r\n"+
                 "cache-control: no-cache\r\n"+
                 "pragma: no-cache\r\n"+
