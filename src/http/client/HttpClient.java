@@ -11,9 +11,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 /**
- * TODO[] proxi
  * TODO[] cache
- * TODO[] events
  * Created by Андрей on 07.09.14.
  */
 public class HttpClient {
@@ -21,6 +19,11 @@ public class HttpClient {
     private HttpExceptionHandler exceptionHandler = null;
     private CookieManager cookieManager = null;
     private RedirectManager redirectManager = null;
+
+    private HttpEventHandler beforeRequest = null;
+    private HttpEventHandler afterResponseHeaders = null;
+    private HttpEventHandler beforeRedirect = null;
+    private HttpEventHandler beforeComplite = null;
 
     private static HttpClient ourInstance = new HttpClient();
     public static HttpClient getInstance() {
@@ -38,6 +41,10 @@ public class HttpClient {
         httpRequestProcess.setCookieManager(cookieManager);
         httpRequestProcess.setExceptionHandler(exceptionHandler);
         httpRequestProcess.setRedirectManager(redirectManager);
+        httpRequestProcess.beforeRequest(beforeRequest);
+        httpRequestProcess.afterResponseHeaders(afterResponseHeaders);
+        httpRequestProcess.beforeRedirect(beforeRedirect);
+        httpRequestProcess.beforeComplite(beforeComplite);
         return httpRequestProcess;
     }
 
@@ -159,6 +166,56 @@ public class HttpClient {
 
     public void setRedirectManager(RedirectManager redirectManager) {
         this.redirectManager = redirectManager;
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Events">
+    /**
+     * Запрос полностью сформирован, в следующей строчке он будет отправлен
+     * @param beforeRequest
+     */
+    public void beforeRequest(HttpEventHandler beforeRequest) {
+        if (this.beforeRequest == null) {
+            this.beforeRequest = beforeRequest;
+        } else {
+            this.beforeRequest.after(beforeRequest);
+        }
+    }
+
+    /**
+     * После заголовков ответа
+     * @param afterResponseHeaders
+     */
+    public void afterResponseHeaders(HttpEventHandler afterResponseHeaders) {
+        if (this.afterResponseHeaders == null) {
+            this.afterResponseHeaders = afterResponseHeaders;
+        } else {
+            this.afterResponseHeaders.after(afterResponseHeaders);
+        }
+    }
+
+    /**
+     * Непосредственно перед редиректом
+     * @param beforeRedirect
+     */
+    public void beforeRedirect(HttpEventHandler beforeRedirect) {
+        if (this.beforeRedirect == null) {
+            this.beforeRedirect = beforeRedirect;
+        } else {
+            this.beforeRedirect.after(beforeRedirect);
+        }
+    }
+
+    /**
+     * В конце работы метода
+     * @param beforeComplite
+     */
+    public void beforeComplite(HttpEventHandler beforeComplite) {
+        if (this.beforeComplite == null) {
+            this.beforeComplite = beforeComplite;
+        } else {
+            this.beforeComplite.after(beforeComplite);
+        }
     }
     //</editor-fold>
 }
