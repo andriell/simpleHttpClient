@@ -2,6 +2,7 @@ package http.datatypes;
 
 import http.helper.ArrayHelper;
 import http.helper.C;
+import http.helper.Config;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -20,7 +21,7 @@ public class HttpUrl implements Comparable<HttpUrl> {
     private byte[] query = null;
     private byte[] fragment = null;
 
-    private String charset = "";
+    private String charset = Config.getUrlCharset();
     private int hashCode = 0;
 
     public HttpUrl(String url, String charset) throws Exception {
@@ -29,13 +30,11 @@ public class HttpUrl implements Comparable<HttpUrl> {
     }
 
     public HttpUrl(String url) throws ParseException, UnsupportedEncodingException {
-        this.charset = "UTF-8";
         parseUrl(url.getBytes(this.charset));
     }
 
     public HttpUrl(byte[] url) throws ParseException {
         parseUrl(url);
-        this.charset = "UTF-8";
     }
 
     public HttpUrl(byte[] url, String charset) throws ParseException {

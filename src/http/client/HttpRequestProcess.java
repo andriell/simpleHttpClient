@@ -1,6 +1,7 @@
 package http.client;
 
 import http.datatypes.HttpUrl;
+import http.helper.Config;
 import http.stream.input.HttpChunkedInputStream;
 import http.stream.input.HttpContentLengthInputStream;
 import http.stream.output.HttpHeaderOutputStream;
@@ -33,7 +34,7 @@ public class HttpRequestProcess implements Runnable {
     private HttpHeaderRequest headerRequest = new HttpHeaderRequest();
     private HttpHeaderOutputStream headerResponse;
     private OutputStream userOutputStream;
-    private String user = "";
+    private String user = Config.getDefaultUserName();
     private int maxRequest = 6;
     private int requestCount = 0;
     private boolean stop = false;
