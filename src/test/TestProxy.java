@@ -13,10 +13,10 @@ import java.net.Socket;
 /**
  * Created by arybalko on 01.09.14.
  */
-public class TestProxi {
+public class TestProxy {
     public static void main(String[] args) {
         try {
-            new TestProxi().go();
+            new TestProxy().go();
         } catch (Exception e) {
             e.printStackTrace();
         }
