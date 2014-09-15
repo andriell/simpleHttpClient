@@ -88,9 +88,9 @@ public class HttpClient {
         return getString(client, 0);
     }
 
-    public String getString(HttpRequestProcess client, int timeMin) {
+    public String getString(HttpRequestProcess client, int time) {
         try {
-            if (clientCache != null && timeMin > 0) {
+            if (clientCache != null && time > 0) {
                 String r = clientCache.get(client);
                 if (r != null) {
                     return r;
@@ -111,8 +111,8 @@ public class HttpClient {
             if (contentType != null) {
                 charsetName = ContentType.getCharsetB(contentType);
             }
-            if (clientCache != null && timeMin > 0) {
-                clientCache.save(client, data, charsetName, timeMin);
+            if (clientCache != null && time > 0) {
+                clientCache.save(client, data, charsetName, time);
             }
             if (charsetName != null) {
                 return new String(data, new String(charsetName));
@@ -134,14 +134,14 @@ public class HttpClient {
         return getString(user, url, 0);
     }
 
-    public String getString(String user, HttpUrl url, int timeMin) {
-        return getString(newRequest(), user, url, timeMin);
+    public String getString(String user, HttpUrl url, int time) {
+        return getString(newRequest(), user, url, time);
     }
 
-    public String getString(String user, String url, int timeMin) {
+    public String getString(String user, String url, int time) {
         HttpRequestProcess client = newRequest();
         try {
-            return getString(client, user, new HttpUrl(url), timeMin);
+            return getString(client, user, new HttpUrl(url), time);
         } catch (Exception e) {
             if (exceptionHandler != null) {
                 exceptionHandler.exception(e, client);
@@ -156,10 +156,10 @@ public class HttpClient {
         return getString(client, 0);
     }
 
-    public String getString(HttpRequestProcess client, String user, HttpUrl url, int timeMin) {
+    public String getString(HttpRequestProcess client, String user, HttpUrl url, int time) {
         client.setUser(user);
         client.setUrl(url);
-        return getString(client, timeMin);
+        return getString(client, time);
     }
     //</editor-fold>
 

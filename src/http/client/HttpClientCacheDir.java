@@ -72,7 +72,7 @@ public class HttpClientCacheDir implements HttpClientCache {
         return new String(Files.readAllBytes(fileData.toPath()));
     }
 
-    public void save(HttpRequestProcess client, byte[] data, byte[] charset, int timeMin) throws IOException {
+    public void save(HttpRequestProcess client, byte[] data, byte[] charset, int time) throws IOException {
         if (!client.getMethod().equals(HttpRequestMethod.GET)) {
             return;
         }
@@ -86,7 +86,7 @@ public class HttpClientCacheDir implements HttpClientCache {
         new File(dir, cache.dir).mkdirs();
 
         FileOutputStream output = new FileOutputStream(fileInfo);
-        output.write(ArrayHelper.intToArry(time() + timeMin));
+        output.write(ArrayHelper.intToArry(time() + time));
         output.write(C.BS_LF);
         if (charset != null) {
             output.write(charset);
@@ -101,15 +101,19 @@ public class HttpClientCacheDir implements HttpClientCache {
         output.close();
     }
 
+    /**
+     * Количество секунд прошедших с начала 2000 года
+     * @return
+     */
     private int time() {
-        return (int) (System.currentTimeMillis() / 60000L);
+        return (int) (System.currentTimeMillis() / 1000L - 946684800L);
     }
 
     public void clearDir() throws IOException {
-        clearDir(dir);
+        clearDir(dir, time());
     }
 
-    private int clearDir(File dir) throws IOException {
+    private int clearDir(File dir, int time) throws IOException {
         int deleteCount = 0;
         File[] list = dir.listFiles();
 
@@ -119,7 +123,7 @@ public class HttpClientCacheDir implements HttpClientCache {
 
         for (File f: list) {
             if (f.isDirectory()) {
-                deleteCount += clearDir(f);
+                deleteCount += clearDir(f, time);
             } else {
                 String absPath = f.getAbsolutePath();
                 if (!absPath.endsWith(extInfo)) {
@@ -127,7 +131,7 @@ public class HttpClientCacheDir implements HttpClientCache {
                 }
                 byte[] dataInfo = Files.readAllBytes(f.toPath());
                 InfoFile infoFile = new InfoFile(dataInfo, false);
-                if (infoFile.time > time()) {
+                if (infoFile.time > time) {
                     continue;
                 }
                 String tmp = absPath.substring(0, absPath.length() - extInfo.length());
