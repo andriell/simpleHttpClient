@@ -29,7 +29,7 @@ public class TestHttpClient {
         HttpClient.getInstance().setCookieManager(cookieManager);
         HttpClient.getInstance().setExceptionHandler(httpExceptionHandlerPrint);
 
-        String s = HttpClient.getInstance().getString("", "http://vk.com");
+        String s = HttpClient.getInstance().getString("", "http://vk.com", 1);
         System.out.println(s);
 
         cookieManager.save();

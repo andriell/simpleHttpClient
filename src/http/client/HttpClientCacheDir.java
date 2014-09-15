@@ -60,14 +60,16 @@ public class HttpClientCacheDir implements HttpClientCache {
 
         byte[] dataInfo = Files.readAllBytes(fileInfo.toPath());
         InfoFile infoFile = new InfoFile(dataInfo, false);
-        //System.out.println(infoFile);
 
         if (infoFile.time < time()) {
             fileInfo.delete();
             fileData.delete();
             return null;
         }
-        return new String(Files.readAllBytes(fileData.toPath()), infoFile.charsetName);
+        if (infoFile.charsetName != null && !infoFile.charsetName.isEmpty()) {
+            return new String(Files.readAllBytes(fileData.toPath()), infoFile.charsetName);
+        }
+        return new String(Files.readAllBytes(fileData.toPath()));
     }
 
     public void save(HttpRequestProcess client, byte[] data, byte[] charset, int timeMin) throws IOException {
@@ -86,7 +88,9 @@ public class HttpClientCacheDir implements HttpClientCache {
         FileOutputStream output = new FileOutputStream(fileInfo);
         output.write(ArrayHelper.intToArry(time() + timeMin));
         output.write(C.BS_LF);
-        output.write(charset);
+        if (charset != null) {
+            output.write(charset);
+        }
         output.write(C.BS_LF);
         output.write(client.getUrl().getBytes());
         output.write(C.BS_LF);
@@ -101,11 +105,11 @@ public class HttpClientCacheDir implements HttpClientCache {
         return (int) (System.currentTimeMillis() / 60000L);
     }
 
-    public void deleteOldFile() throws IOException {
-        deleteOldFile(dir);
+    public void clearDir() throws IOException {
+        clearDir(dir);
     }
 
-    private long deleteOldFile(File dir) throws IOException {
+    private int clearDir(File dir) throws IOException {
         int deleteCount = 0;
         File[] list = dir.listFiles();
 
@@ -115,7 +119,7 @@ public class HttpClientCacheDir implements HttpClientCache {
 
         for (File f: list) {
             if (f.isDirectory()) {
-                deleteCount += deleteOldFile(f);
+                deleteCount += clearDir(f);
             } else {
                 String absPath = f.getAbsolutePath();
                 if (!absPath.endsWith(extInfo)) {
@@ -215,7 +219,7 @@ public class HttpClientCacheDir implements HttpClientCache {
         }
     }
 
-    public class InfoFile {
+    private class InfoFile {
         int time = - 1;
         String charsetName;
         String url;

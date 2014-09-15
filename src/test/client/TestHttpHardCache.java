@@ -40,7 +40,7 @@ public class TestHttpHardCache {
         HttpUrl url2 = new HttpUrl("https://www.google.ru/a/b/index.php?gws_rd=ssl&newwindow=1&q=%D1%8E%D1%82%D1%83%D0%B1%D0%B5");
         requestProcess2.setUrl(url2);
 
-        cache.save(requestProcess1, t1.getBytes(), "UTF-8".getBytes(), 1);
+        cache.save(requestProcess1, t1.getBytes(), null, 1);
         String r1 = cache.get(requestProcess1);
         Test.t(r1.equals(t1), true, "Save1");
 
@@ -68,7 +68,7 @@ public class TestHttpHardCache {
         add(cache, "https://www.google.ru/a/b/c/d/1.php?gws_rd=ssl&newwindow=1&q=%D1%8E%D1%82%D1%83%D0%B1%D0%B5");
         add(cache, "https://www.google.ru/a/b/c/d/in2dex.php?gws_rd=ssl&newwindow=1&q=%D1%8E%D1%82%D1%83%D0%B1%D0%B5");
 
-        cache.deleteOldFile();
+        cache.clearDir();
 
         File[] files = new File(dirName).listFiles();
         Test.t(files.length == 1 && files[0].getName().equals("test.txt"), true, "Delete");

@@ -136,6 +136,10 @@ public class ContentType {
     }
 
     public static String getCharset(byte[] data) {
+        return new String(getCharsetB(data));
+    }
+
+    public static byte[] getCharsetB(byte[] data) {
         if (data == null) {
             return null;
         }
@@ -193,7 +197,7 @@ public class ContentType {
                 ) {
                     end++;
                 }
-                return new String(data, start, end - start);
+                return Arrays.copyOfRange(data, start, end);
             }
         }
 

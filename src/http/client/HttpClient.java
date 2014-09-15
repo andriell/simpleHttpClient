@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 /**
- * TODO[] cache
  * Created by Андрей on 07.09.14.
  */
 public class HttpClient {
@@ -19,6 +18,7 @@ public class HttpClient {
     private HttpExceptionHandler exceptionHandler = null;
     private CookieManager cookieManager = null;
     private RedirectManager redirectManager = null;
+    private HttpClientCache clientCache = null;
 
     private HttpEventHandler beforeRequest = null;
     private HttpEventHandler afterResponseHeaders = null;
@@ -83,9 +83,16 @@ public class HttpClient {
     }
     //</editor-fold>
 
-    //<editor-fold desc="get">
-    public String getString(HttpRequestProcess client) {
+    //<editor-fold desc="getString">
+    public String getString(HttpRequestProcess client, int timeMin) {
         try {
+            if (clientCache != null && timeMin > 0) {
+                String r = clientCache.get(client);
+                if (r != null) {
+                    return r;
+                }
+            }
+
             HttpPartOutputStream httpPartOutputStream = new HttpPartOutputStream();
             client.setOutputStream(httpPartOutputStream);
             client.run();
@@ -96,11 +103,15 @@ public class HttpClient {
             }
 
             byte[] contentType = client.getHeaderResponse().get(HttpHeaders.contentType);
+            byte[] charsetName = null;
             if (contentType != null) {
-                String charsetName = ContentType.getCharset(contentType);
-                if (charsetName != null) {
-                    return new String(data, charsetName);
-                }
+                charsetName = ContentType.getCharsetB(contentType);
+            }
+            if (clientCache != null && timeMin > 0) {
+                clientCache.save(client, data, charsetName, timeMin);
+            }
+            if (charsetName != null) {
+                return new String(data, new String(charsetName));
             }
             return new String(data);
         } catch (Exception e) {
@@ -111,14 +122,14 @@ public class HttpClient {
         return "";
     }
 
-    public String getString(String user, HttpUrl url) {
-        return getString(newRequest(), user, url);
+    public String getString(String user, HttpUrl url, int timeMin) {
+        return getString(newRequest(), user, url, timeMin);
     }
 
-    public String getString(String user, String url) {
+    public String getString(String user, String url, int timeMin) {
         HttpRequestProcess client = newRequest();
         try {
-            return getString(client, user, new HttpUrl(url));
+            return getString(client, user, new HttpUrl(url), timeMin);
         } catch (Exception e) {
             if (exceptionHandler != null) {
                 exceptionHandler.exception(e, client);
@@ -127,10 +138,10 @@ public class HttpClient {
         return "";
     }
 
-    public String getString(HttpRequestProcess client, String user, HttpUrl url) {
+    public String getString(HttpRequestProcess client, String user, HttpUrl url, int timeMin) {
         client.setUser(user);
         client.setUrl(url);
-        return getString(client);
+        return getString(client, timeMin);
     }
     //</editor-fold>
 
@@ -166,6 +177,14 @@ public class HttpClient {
 
     public void setRedirectManager(RedirectManager redirectManager) {
         this.redirectManager = redirectManager;
+    }
+
+    public HttpClientCache getClientCache() {
+        return clientCache;
+    }
+
+    public void setClientCache(HttpClientCache clientCache) {
+        this.clientCache = clientCache;
     }
     //</editor-fold>
 
