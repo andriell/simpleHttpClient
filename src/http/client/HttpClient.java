@@ -84,6 +84,10 @@ public class HttpClient {
     //</editor-fold>
 
     //<editor-fold desc="getString">
+    public String getString(HttpRequestProcess client) {
+        return getString(client, 0);
+    }
+
     public String getString(HttpRequestProcess client, int timeMin) {
         try {
             if (clientCache != null && timeMin > 0) {
@@ -122,6 +126,14 @@ public class HttpClient {
         return "";
     }
 
+    public String getString(String user, HttpUrl url) {
+        return getString(newRequest(), user, url, 0);
+    }
+
+    public String getString(String user, String url) {
+        return getString(user, url, 0);
+    }
+
     public String getString(String user, HttpUrl url, int timeMin) {
         return getString(newRequest(), user, url, timeMin);
     }
@@ -136,6 +148,12 @@ public class HttpClient {
             }
         }
         return "";
+    }
+
+    public String getString(HttpRequestProcess client, String user, HttpUrl url) {
+        client.setUser(user);
+        client.setUrl(url);
+        return getString(client, 0);
     }
 
     public String getString(HttpRequestProcess client, String user, HttpUrl url, int timeMin) {
