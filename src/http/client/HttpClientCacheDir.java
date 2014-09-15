@@ -116,7 +116,6 @@ public class HttpClientCacheDir implements HttpClientCache {
         for (File f: list) {
             if (f.isDirectory()) {
                 deleteCount += deleteOldFile(f);
-                System.out.println("Dir:" + f.getAbsoluteFile());
             } else {
                 String absPath = f.getAbsolutePath();
                 if (!absPath.endsWith(extInfo)) {
@@ -124,10 +123,10 @@ public class HttpClientCacheDir implements HttpClientCache {
                 }
                 byte[] dataInfo = Files.readAllBytes(f.toPath());
                 InfoFile infoFile = new InfoFile(dataInfo, false);
-                if (infoFile.time >= time()) {
+                if (infoFile.time > time()) {
                     continue;
                 }
-                String tmp = absPath.substring(0, absPath.length() - extInfo.length() - 1);
+                String tmp = absPath.substring(0, absPath.length() - extInfo.length());
                 new File(tmp + extData).delete();
                 f.delete();
                 deleteCount += 2;
