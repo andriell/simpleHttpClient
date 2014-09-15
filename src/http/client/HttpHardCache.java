@@ -10,8 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.SimpleTimeZone;
 
 /**
  * Created by arybalko on 10.09.14.
@@ -20,7 +18,6 @@ public class HttpHardCache {
     private boolean replaceSeparator = false;
     private String dirForDefaultUser = "dafault";
     File dir;
-    HashMap<String, Integer> dataTime = new HashMap<String, Integer>();
 
     public HttpHardCache(String dir) throws IOException {
         this(new File(dir));
@@ -37,73 +34,75 @@ public class HttpHardCache {
         replaceSeparator = File.separator.equals("\\");
     }
 
-    public CacheFile fileCache(HttpRequestProcess client) {
-        HttpUrl url = client.getUrl();
-        if (url == null) {
+    public String get(HttpRequestProcess client) throws IOException {
+        if (!client.getMethod().equals(HttpRequestMethod.GET)) {
+            return null;
+        }
+        CacheFile cache = new CacheFile(client);
+        if (cache.dir == null) {
             return null;
         }
 
-        String user = client.getUser();
-        if (user == null || user.isEmpty()) {
-            user = dirForDefaultUser;
+        File fileInfo = new File(dir, cache.fileInfo);
+        File fileData = new File(dir, cache.fileData);
+        if (!(fileInfo.isFile() && fileData.isFile())) {
+            if (fileInfo.isFile()) {
+                fileInfo.delete();
+            }
+            if (fileData.isFile()) {
+                fileData.delete();
+            }
+            return null;
         }
 
-        byte[] path = client.getUrl().getPath().getBytes();
-        if (replaceSeparator) {
-            for (int i = 0; i < path.length; i++) {
-                if (path[i] == C.SOLIDUS) {
-                    path[i] = C.REVERSE_SOLIDUS;
+        byte[] dataInfo = Files.readAllBytes(fileInfo.toPath());
+        int l = dataInfo.length;
+        int time = -1;
+        String charsetName = null;
+        int lf = 0;
+        for (int i = 0; i < l; i++) {
+            if (dataInfo[i] == C.LF) {
+                if (time < 0) {
+                    time = ArrayHelper.parseInt(dataInfo, lf, i - 1, 10, 0);
+                } else if (charsetName == null) {
+                    charsetName = new String(dataInfo, lf + 1, i - lf - 1);
+                    break;
                 }
+                lf = i;
             }
         }
 
-        String dir = user + File.separator + url.getDomain() + "." + url.getPort() + File.separator + new String(path);
-        return new CacheFile(dir, Arrays.hashCode(url.getQuery()) + ".tmp");
-    }
-
-    public byte[] get(HttpRequestProcess client) throws IOException {
-        if (!client.getMethod().equals(HttpRequestMethod.GET)) {
-
-            return null;
-        }
-        CacheFile cache = fileCache(client);
-        if (cache.fullPath == null) {
-            return null;
-        }
-        File fileCache = new File(cache.fullPath);
-
-        if (!fileCache.isFile()) {
-            return null;
-        }
-        byte[] data = Files.readAllBytes(fileCache.toPath());
-        int time = dataTime.get(cache.fullPath);
-        System.out.println(time);
-        System.out.println(time());
         if (time < time()) {
-            fileCache.delete();
-            dataTime.remove(cache.fullPath);
+            fileInfo.delete();
+            fileData.delete();
             return null;
         }
-        return data;
+        return new String(Files.readAllBytes(fileData.toPath()), charsetName);
     }
 
-    public void save(HttpRequestProcess client, byte[] data, int timeMin) throws IOException {
+    public void save(HttpRequestProcess client, byte[] data, byte[] charset, int timeMin) throws IOException {
         if (!client.getMethod().equals(HttpRequestMethod.GET)) {
             return;
         }
-        CacheFile cacheFile = fileCache(client);
+        CacheFile cache = new CacheFile(client);
 
-        if (cacheFile.dir == null) {
+        if (cache.dir == null) {
             return;
         }
-        File file = new File(dir, cacheFile.fullPath);
-        if (file.isFile()) {
-            return;
-        }
-        new File(dir, cacheFile.dir).mkdirs();
+        File fileInfo = new File(dir, cache.fileInfo);
+        File fileData = new File(dir, cache.fileData);
+        new File(dir, cache.dir).mkdirs();
 
-        dataTime.put(cacheFile.fullPath, time() + timeMin);
-        FileOutputStream output = new FileOutputStream(file);
+        FileOutputStream output = new FileOutputStream(fileInfo);
+        output.write(ArrayHelper.intToArry(time() + timeMin));
+        output.write(C.BS_LF);
+        output.write(charset);
+        output.write(C.BS_LF);
+        output.write(client.getUrl().getBytes());
+        output.write(C.BS_LF);
+        output.close();
+
+        output = new FileOutputStream(fileData);
         output.write(data);
         output.close();
     }
@@ -113,12 +112,44 @@ public class HttpHardCache {
     }
 
     private class CacheFile {
-        String fullPath;
+        String fileData;
+        String fileInfo;
         String dir;
 
-        private CacheFile(String dir, String file) {
-            this.fullPath = dir + File.separator + file;
-            this.dir = dir;
+        private CacheFile(HttpRequestProcess client) {
+            HttpUrl url = client.getUrl();
+            if (url == null) {
+                return;
+            }
+
+            String user = client.getUser();
+            if (user == null || user.isEmpty()) {
+                user = dirForDefaultUser;
+            }
+
+            byte[] path = client.getUrl().getPath().getBytes();
+            if (replaceSeparator) {
+                for (int i = 0; i < path.length; i++) {
+                    if (path[i] == C.SOLIDUS) {
+                        path[i] = C.REVERSE_SOLIDUS;
+                    }
+                }
+            }
+
+            int hashCode = Arrays.hashCode(url.getQuery());
+
+            dir = user + File.separator + url.getDomain() + "." + url.getPort() + File.separator + new String(path);
+            fileData = dir + File.separator + hashCode + ".tmp";
+            fileInfo = dir + File.separator + hashCode + ".info";
+        }
+
+        @Override
+        public String toString() {
+            return "CacheFile{" +
+                    "fileData='" + fileData + '\'' +
+                    ", fileInfo='" + fileInfo + '\'' +
+                    ", dir='" + dir + '\'' +
+                    '}';
         }
     }
 }

@@ -30,20 +30,20 @@ public class TestHttpHardCache {
 
         HttpHardCache cache = new HttpHardCache(dir);
 
-        HttpUrl url1 = new HttpUrl("https://www.google.ru/a/b/c/d/e/index.php?gws_rd=ssl&newwindow=1&q=%D1%8E%D1%82%D1%83%D0%B1%D0%B5");
-        HttpUrl url2 = new HttpUrl("https://www.google.ru/a/b/index.php?gws_rd=ssl&newwindow=1&q=%D1%8E%D1%82%D1%83%D0%B1%D0%B5");
-
         HttpRequestProcess requestProcess1 = new HttpRequestProcess();
-        HttpRequestProcess requestProcess2 = new HttpRequestProcess();
+        HttpUrl url1 = new HttpUrl("https://www.google.ru/a/b/c/d/e/index.php?gws_rd=ssl&newwindow=1&q=%D1%8E%D1%82%D1%83%D0%B1%D0%B5");
         requestProcess1.setUrl(url1);
+
+        HttpRequestProcess requestProcess2 = new HttpRequestProcess();
+        HttpUrl url2 = new HttpUrl("https://www.google.ru/a/b/index.php?gws_rd=ssl&newwindow=1&q=%D1%8E%D1%82%D1%83%D0%B1%D0%B5");
         requestProcess2.setUrl(url2);
 
-        cache.save(requestProcess1, t1.getBytes(), 1);
-        String r1 = new String(cache.get(requestProcess1));
+        cache.save(requestProcess1, t1.getBytes(), "UTF-8".getBytes(), 1);
+        String r1 = cache.get(requestProcess1);
         Test.t(r1.equals(t1), true, "Save1");
 
-        /*cache.save(requestProcess2, t1.getBytes(), -1);
-        byte[] r2 = cache.get(requestProcess2);
-        Test.t(r2 == null, true, "Save2");*/
+        cache.save(requestProcess2, t1.getBytes(), "UTF-8".getBytes(), -1);
+        String r2 = cache.get(requestProcess2);
+        Test.t(r2 == null, true, "Save2");
     }
 }

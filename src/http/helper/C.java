@@ -50,6 +50,8 @@ public class C {
     public static final byte REVERSE_SOLIDUS = 92;
     public static final int I_REVERSE_SOLIDUS = 92;
 
+    // "\n"
+    public static final byte[] BS_LF = {10};
     // " "
     public static final byte[] BS_SP = {32};
     // "#"
