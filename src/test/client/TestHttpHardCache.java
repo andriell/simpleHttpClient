@@ -1,6 +1,6 @@
 package test.client;
 
-import http.client.HttpHardCache;
+import http.client.HttpClientCacheDir;
 import http.client.HttpRequestProcess;
 import http.datatypes.HttpUrl;
 import test.Test;
@@ -28,7 +28,7 @@ public class TestHttpHardCache {
 
         String t1 = "1234567890";
 
-        HttpHardCache cache = new HttpHardCache(dir);
+        HttpClientCacheDir cache = new HttpClientCacheDir(dir);
 
         HttpRequestProcess requestProcess1 = new HttpRequestProcess();
         HttpUrl url1 = new HttpUrl("https://www.google.ru/a/b/c/d/e/index.php?gws_rd=ssl&newwindow=1&q=%D1%8E%D1%82%D1%83%D0%B1%D0%B5");
@@ -45,5 +45,7 @@ public class TestHttpHardCache {
         cache.save(requestProcess2, t1.getBytes(), "UTF-8".getBytes(), -1);
         String r2 = cache.get(requestProcess2);
         Test.t(r2 == null, true, "Save2");
+
+        cache.deleteOldFile();
     }
 }
