@@ -1,4 +1,4 @@
-package test.stream.output;
+package test.output;
 
 import http.stream.output.HttpHeaderOutputStream;
 
