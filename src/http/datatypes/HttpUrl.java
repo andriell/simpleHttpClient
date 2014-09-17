@@ -38,12 +38,26 @@ public class HttpUrl implements Comparable<HttpUrl> {
     }
 
     public HttpUrl(byte[] url, String charset) throws ParseException {
-        parseUrl(url);
         this.charset = charset;
+        parseUrl(url);
     }
 
     public HttpUrl(HttpUrl httpUrl, byte[] url) throws ParseException {
         parseUrl(httpUrl, url);
+    }
+
+    public HttpUrl(HttpUrl httpUrl, byte[] url, String charset) throws ParseException {
+        this.charset = charset;
+        parseUrl(httpUrl, url);
+    }
+
+    public HttpUrl(HttpUrl httpUrl, String url) throws ParseException {
+        parseUrl(httpUrl, url.getBytes());
+    }
+
+    public HttpUrl(HttpUrl httpUrl, String url, String charset) throws ParseException, UnsupportedEncodingException {
+        this.charset = charset;
+        parseUrl(httpUrl, url.getBytes(charset));
     }
 
     private void parseUrl(HttpUrl httpUrl, byte[] url) throws ParseException {
