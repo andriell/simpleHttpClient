@@ -43,22 +43,57 @@ public class HttpUrl implements Comparable<HttpUrl> {
     }
 
     public HttpUrl(HttpUrl httpUrl, byte[] url) throws ParseException {
+        parseUrl(httpUrl, url);
+    }
+
+    private void parseUrl(HttpUrl httpUrl, byte[] url) throws ParseException {
         if (url == null) {
             return;
         }
-        parseScheme(url);
-        if (scheme != null) {
-            parseUrl(url);
+
+        int l = url.length;
+        // http://a.ru
+        if (l < 11) {
+            throw new ParseException(new String(url) + ".length < 11", l);
+        }
+
+        int startIndex = parseScheme(url);
+        if (scheme == null) {
+            throw new ParseException(new String(url, 0, 10) + " - unknown scheme", 0);
+        } else {
+            startIndex++;
+            startIndex = parseDomain(url, startIndex);
+            if (domain == null) {
+                throw new ParseException(new String(url, 0, 10) + " - unknown domain", startIndex);
+            }
+            startIndex++;
+            startIndex = parsePath(url, startIndex);
+            startIndex++;
+            startIndex = parseQuery(url, startIndex);
+        }
+    }
+
+    private void parseUrl(byte[] url) throws ParseException {
+        if (url == null) {
             return;
         }
-        if (url[0] == C.SOLIDUS) {
-            scheme = httpUrl.scheme;
-            domain = httpUrl.domain;
-            parseUrl(url);
-        } else {
 
+        int l = url.length;
+        // http://a.ru
+        if (l < 11) {
+            throw new ParseException(new String(url) + ".length < 11", l);
         }
 
+        int startIndex = parseScheme(url);
+        if (scheme == null) {
+            throw new ParseException(new String(url, 0, 10) + " - unknown scheme", 0);
+        }
+        startIndex = parseDomain(url, startIndex);
+        if (domain == null) {
+            throw new ParseException(new String(url, 0, 10) + " - unknown domain", startIndex);
+        }
+        startIndex = parsePath(url, startIndex);
+        startIndex = parseQuery(url, startIndex);
     }
 
     private int parseScheme(byte[] url) throws ParseException {
@@ -80,7 +115,7 @@ public class HttpUrl implements Comparable<HttpUrl> {
                 && url[6] == 47
             ) {
                 scheme = HttpUrlSheme.http;
-                return 6;
+                return 7;
             }
             if (
                 (url[4] == 83 || url[4] == 115)
@@ -89,96 +124,87 @@ public class HttpUrl implements Comparable<HttpUrl> {
                 && url[7] == 47
             ) {
                 scheme = HttpUrlSheme.https;
-                return 7;
+                return 8;
             }
         }
         throw new ParseException(new String(url, 0, 10) + " - unknown scheme", 0);
     }
 
-    private void parseDomain(byte[] url, int startIndex) throws ParseException {
-        Domain r;
+    private int parseDomain(byte[] url, int startIndex) throws ParseException {
+        int l = url.length;
+        if (!(-1 < startIndex && startIndex < l)) {
+            return startIndex;
+        }
+
         int startPort = -1;
-        for (int i = startIndex; i < url.length; i++) {
-            if (url[i] == 58) { // : COLON:58
+        for (int i = startIndex; i < l; i++) {
+            if (url[i] == C.COLON) { // : COLON:58
                 domain = new Domain(Arrays.copyOfRange(url, startIndex, i));
                 startPort = i;
-            } else if (url[i] == 47 || url[i] == 63 || url[i] == 35) {
+            } else if (url[i] == C.NUMBER_SIGN || url[i] == C.SOLIDUS || url[i] == C.QUESTION) {
+                // # NUMBER SIGN:35
                 // / SOLIDUS:47
                 // ? QUESTION MARK:63
-                // # NUMBER SIGN:35
-                if (startPort > -1) {
+                if (-1 < startPort) {
                     port = ArrayHelper.parseInt(url, startPort + 1, i - 1, 10, -1);
                 } else {
                     domain = new Domain(Arrays.copyOfRange(url, startIndex, i));
                 }
+                return i;
             }
         }
+        if (-1 < startPort) {
+            port = ArrayHelper.parseInt(url, startPort + 1, l - 1, 10, -1);
+        } else {
+            domain = new Domain(Arrays.copyOfRange(url, startIndex, l));
+        }
+        return l;
     }
 
-    private void parseUrl(byte[] url) throws ParseException {
+    private int parsePath(byte[] url, int startIndex) throws ParseException {
         int l = url.length;
-
-        // http://a.ru
-        if (l < 11) {
-            throw new ParseException(new String(url) + ".length < 11", l);
+        if (!(-1 < startIndex && startIndex < l)) {
+            return startIndex;
+        }
+        if (url[startIndex] == C.NUMBER_SIGN || url[startIndex] == C.QUESTION) {
+            // # NUMBER SIGN:35
+            // ? QUESTION MARK:63
+            path = new Path(C.BS_SOLIDUS);
+            return startIndex;
         }
 
-        int startDomain = -1;
-
-        //<editor-fold desc="scheme">
-        if (scheme == null) {
-            startDomain = parseScheme(url);
-        }
-        //</editor-fold>
-
-        int startPort = -1;
-        int startPath = -1;
-        int startQuery = -1;
-        for (int i = startDomain; i < l; i++) {
-            if (url[i] == 58 && domain == null) { // : COLON:58
-                domain = new Domain(Arrays.copyOfRange(url, startDomain, i));
-                startPort = i;
-            } else if (url[i] == 47) { // / SOLIDUS:47
-                if (startPath < 0) {
-                    System.out.println(i);
-                    startPath = i;
-                }
-                if (startPort > 0) {
-                    port = ArrayHelper.parseInt(url, startPort + 1, i - 1, 10, -1);
-                    startPort = 0;
-                } else if (domain == null) {
-                    domain = new Domain(Arrays.copyOfRange(url, startDomain, i));
-                }
-            } else if (url[i] == 63) { // ? QUESTION MARK:63
-                if (startQuery < 0) {
-                    startQuery = i + 1;
-                }
-                if (path == null && -1 < startPath) {
-                    path = new Path(Arrays.copyOfRange(url, startPath, i));
-                }
-            } else if (url[i] == 35) { // # NUMBER SIGN:35
-                fragment = Arrays.copyOfRange(url, i + 1, l);
-                if (query == null && -1 < startQuery) {
-                    query = Arrays.copyOfRange(url, startQuery, i);
-                }
-                if (path == null && -1 < startPath) {
-                    path = new Path(Arrays.copyOfRange(url, startPath, i));
-                }
-                break;
+        for (int i = startIndex; i < l; i++) {
+            if (url[i] == C.NUMBER_SIGN || url[i] == C.QUESTION) {
+                // # NUMBER SIGN:35
+                // ? QUESTION MARK:63
+                path = new Path(Arrays.copyOfRange(url, startIndex, i));
+                return i;
             }
         }
-        if (domain == null && -1 < startDomain) {
-            domain = new Domain(Arrays.copyOfRange(url, startDomain, l));
+        path = new Path(Arrays.copyOfRange(url, startIndex, l));
+        return l;
+    }
+
+    private int parseQuery(byte[] url, int startIndex) throws ParseException {
+        int l = url.length;
+        if (!(-1 < startIndex && startIndex < l)) {
+            return startIndex;
         }
-        if (query == null && -1 < startQuery) {
-            query = Arrays.copyOfRange(url, startQuery, l);
+        if (url[startIndex] == C.NUMBER_SIGN) {
+            // # NUMBER SIGN:35
+            fragment = Arrays.copyOfRange(url, startIndex + 1, l);
+            return startIndex;
         }
-        if (path == null && -1 < startPath) {
-            path = new Path(Arrays.copyOfRange(url, startPath, l));
+
+        for (int i = startIndex; i < l; i++) {
+            if (url[i] == C.NUMBER_SIGN) { // # NUMBER SIGN:35
+                query = Arrays.copyOfRange(url, startIndex + 1, i);
+                fragment = Arrays.copyOfRange(url, i + 1, l);
+                return l;
+            }
         }
-        if (path == null) {
-            path = new Path(C.BS_SOLIDUS);
-        }
+        query = Arrays.copyOfRange(url, startIndex + 1, l);
+        return l;
     }
 
     public HttpUrlSheme getScheme() {

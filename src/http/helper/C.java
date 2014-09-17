@@ -19,6 +19,9 @@ public class C {
     // "
     public static final byte QUOTATION = 34;
     public static final int I_QUOTATION = 34;
+    // #
+    public static final byte NUMBER_SIGN = 35;
+    public static final int I_NUMBER_SIGN = 35;
     // '
     public static final byte APOSTROPHE = 39;
     public static final int I_APOSTROPHE = 39;
@@ -46,6 +49,9 @@ public class C {
     // "="
     public static final byte EQUALS = 61;
     public static final int I_EQUALS = 61;
+    // "?"
+    public static final byte QUESTION = 63;
+    public static final int I_QUESTION = 63;
     // "\"
     public static final byte REVERSE_SOLIDUS = 92;
     public static final int I_REVERSE_SOLIDUS = 92;
