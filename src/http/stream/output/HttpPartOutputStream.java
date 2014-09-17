@@ -51,15 +51,15 @@ public class HttpPartOutputStream extends OutputStream {
         if (data[0] == null) {
             return null;
         }
-        int l = i1 * l1 + i2 + 1;
+        int l = i1 * l2 + i2 + 1;
         byte[] r = new byte[l];
         l = 0;
         for (int i = 0; i <= i1; i++) {
             if (i == i1) {
                 System.arraycopy(data[i], 0, r, l, i2 + 1);
             } else {
-                System.arraycopy(data[i], 0, r, l, l1);
-                l += l1;
+                System.arraycopy(data[i], 0, r, l, l2);
+                l += l2;
             }
         }
         return r;

@@ -35,7 +35,7 @@ public class TestHttpRequestProcess {
 
         httpSocketFactory = new HttpSoketFactoryDefault();
         // http://hideme.ru/proxy-list/?maxtime=100&type=hs
-        httpSocketFactory.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("92.50.194.162", 3128)));
+        //httpSocketFactory.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("92.50.194.162", 3128)));
         //System.setProperty("http.proxyHost", "10.250.1.6");
         //System.setProperty("http.proxyPort", "3128");
 
@@ -60,6 +60,7 @@ public class TestHttpRequestProcess {
         print("http://google.ru/");
         print("http://ya.ru/");
         print("http://vk.com/");
+        print("http://www.mamba.ru/search.phtml?t=a&form=1&ia=M&lf=F&af=22&at=29&s_c=3159_3529_3538_0&target%5B%5D=");
 
         download("http://vk.com/", "vk.html");
         download("http://i.msdn.microsoft.com/dynimg/IC52612.gif", "IC52612.gif");
