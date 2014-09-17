@@ -47,6 +47,11 @@ public class TestHttpUrl {
         HttpUrl httpUrl6 = new HttpUrl(httpUrl3, "b/index.php?q=1#123".getBytes());
         print(httpUrl6);
         System.out.println();
+
+        HttpUrl httpUrl10 = new HttpUrl("http://www.mamba.ru/search.phtml?t=a&form=1&ia=M&lf=F&af=22&at=29&s_c=3159_3529_3538_0&target%5B%5D=");
+        HttpUrl httpUrl11 = new HttpUrl(httpUrl10, "?ia=M&lf=F&af=22&at=29&s_c=3159_3529_3538_0&wp=1&geo=0&t=a&offset=0&nchanged=1410971300&noid=1051171926".getBytes());
+        print(httpUrl11);
+        System.out.println(httpUrl11);
     }
 
     public static void print(HttpUrl urlNew) throws Exception {

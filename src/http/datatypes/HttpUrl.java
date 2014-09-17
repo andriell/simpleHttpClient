@@ -42,25 +42,25 @@ public class HttpUrl implements Comparable<HttpUrl> {
         parseUrl(url);
     }
 
-    public HttpUrl(HttpUrl httpUrl, byte[] url) throws ParseException {
+    public HttpUrl(HttpUrl httpUrl, byte[] url) throws ParseException, CloneNotSupportedException {
         parseUrl(httpUrl, url);
     }
 
-    public HttpUrl(HttpUrl httpUrl, byte[] url, String charset) throws ParseException {
+    public HttpUrl(HttpUrl httpUrl, byte[] url, String charset) throws ParseException, CloneNotSupportedException {
         this.charset = charset;
         parseUrl(httpUrl, url);
     }
 
-    public HttpUrl(HttpUrl httpUrl, String url) throws ParseException {
+    public HttpUrl(HttpUrl httpUrl, String url) throws ParseException, CloneNotSupportedException {
         parseUrl(httpUrl, url.getBytes());
     }
 
-    public HttpUrl(HttpUrl httpUrl, String url, String charset) throws ParseException, UnsupportedEncodingException {
+    public HttpUrl(HttpUrl httpUrl, String url, String charset) throws ParseException, UnsupportedEncodingException, CloneNotSupportedException {
         this.charset = charset;
         parseUrl(httpUrl, url.getBytes(charset));
     }
 
-    private void parseUrl(HttpUrl httpUrl, byte[] url) throws ParseException {
+    private void parseUrl(HttpUrl httpUrl, byte[] url) throws ParseException, CloneNotSupportedException {
         if (url == null) {
             return;
         }
@@ -73,10 +73,10 @@ public class HttpUrl implements Comparable<HttpUrl> {
                 startIndex = parsePath(url, 0);
                 parseQuery(url, startIndex);
             } else {
-                Path oldPath = path;
                 startIndex = parsePath(url, 0);
-                oldPath.add(path);
-                path = oldPath;
+                Path newPath = httpUrl.path.clone();
+                newPath.add(path);
+                path = newPath;
                 parseQuery(url, startIndex);
             }
         } else {

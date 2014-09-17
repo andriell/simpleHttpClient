@@ -9,7 +9,7 @@ import java.util.Arrays;
 /**
  * Created by arybalko on 26.08.14.
  */
-public class Path implements Comparable<Path> {
+public class Path implements Comparable<Path>, Cloneable {
     private String charset;
     private byte[] data;
 
@@ -62,11 +62,15 @@ public class Path implements Comparable<Path> {
     }
 
     public void add(byte[] path) {
-        if ((path == null) || (path != null && path.length < 1))
+        if (path == null)
+            return;
+        if (path.length < 1)
+            return;
+        if (path.length == 1 && path[0] == C.SOLIDUS)
             return;
 
         if ((data == null) || (data != null && data.length < 1)) {
-            data = ArrayHelper.clone(path);
+            data = path.clone();
         } else {
             if (data[data.length - 1] == C.SOLIDUS) {
                 if (path[0] == C.SOLIDUS) {
@@ -116,5 +120,12 @@ public class Path implements Comparable<Path> {
     @Override
     public int compareTo(Path o) {
         return ArrayHelper.compare(data, o.data);
+    }
+
+    @Override
+    protected Path clone() throws CloneNotSupportedException {
+        Path r = (Path) super.clone();
+        r.data = data.clone();
+        return r;
     }
 }
