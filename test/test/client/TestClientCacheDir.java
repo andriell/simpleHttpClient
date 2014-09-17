@@ -11,11 +11,11 @@ import java.io.FileOutputStream;
 /**
  * Created by arybalko on 10.09.14.
  */
-public class TestHttpHardCache {
+public class TestClientCacheDir {
     public static void main(String[] args) {
         try {
-            new TestHttpHardCache().go();
-            new TestHttpHardCache().testDelete();
+            new TestClientCacheDir().go();
+            new TestClientCacheDir().testDelete();
         } catch (Exception e) {
             e.printStackTrace();
         }

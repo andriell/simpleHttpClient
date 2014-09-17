@@ -42,17 +42,8 @@ public class HttpUrl implements Comparable<HttpUrl> {
         this.charset = charset;
     }
 
-    private void parseUrl(byte[] url) throws ParseException {
-        int l = url.length;
-
-        // http://a.ru
-        if (l < 11) {
-            throw new ParseException(new String(url) + ".length < 11", l);
-        }
-
-        int startDomain = 0;
-
-        //<editor-fold desc="scheme">
+    private HttpUrlSheme parseScheme(byte[] url) throws ParseException {
+        //             h    t    t    p    s    :   /   /
         // HTTPS:// = {72,  84,  84,  80,  83,  58, 47, 47}
         // https:// = {104, 116, 116, 112, 115, 58, 47, 47}
         if (
@@ -66,19 +57,36 @@ public class HttpUrl implements Comparable<HttpUrl> {
                 && url[5] == 47
                 && url[6] == 47
             ) {
-                scheme = HttpUrlSheme.http;
-                startDomain = 7;
-            } else if (
+                return HttpUrlSheme.http;
+            }
+            if (
                 (url[4] == 83 || url[4] == 115)
                 && url[5] == 58
                 && url[6] == 47
                 && url[7] == 47
             ) {
-                scheme = HttpUrlSheme.https;
-                startDomain = 8;
-            } else {
-                throw new ParseException(new String(url, 0, 10) + " - unknown scheme", 4);
+                return HttpUrlSheme.https;
             }
+        }
+        return null;
+    }
+
+    private void parseUrl(byte[] url) throws ParseException {
+        int l = url.length;
+
+        // http://a.ru
+        if (l < 11) {
+            throw new ParseException(new String(url) + ".length < 11", l);
+        }
+
+        int startDomain = 0;
+
+        //<editor-fold desc="scheme">
+        scheme = parseScheme(url);
+        if (scheme == HttpUrlSheme.http) {
+            startDomain = 7;
+        } else if (scheme == HttpUrlSheme.https) {
+            startDomain = 8;
         } else {
             throw new ParseException(new String(url, 0, 10) + " - unknown scheme", 0);
         }

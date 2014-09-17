@@ -18,7 +18,6 @@ public class HttpClientCacheDir implements HttpClientCache {
     private static String extInfo = ".info";
     private static String extData = ".tmp";
 
-    private boolean replaceSeparator = false;
     private String dirForDefaultUser = "dafault";
     File dir;
 
@@ -34,7 +33,6 @@ public class HttpClientCacheDir implements HttpClientCache {
         if (!this.dir.canWrite()) {
             throw new IOException("Cannot write to a directory " + this.dir);
         }
-        replaceSeparator = File.separator.equals("\\");
     }
 
     public String get(HttpRequestProcess client) throws IOException {
@@ -197,18 +195,11 @@ public class HttpClientCacheDir implements HttpClientCache {
                 user = dirForDefaultUser;
             }
 
-            byte[] path = client.getUrl().getPath().getBytes();
-            if (replaceSeparator) {
-                for (int i = 0; i < path.length; i++) {
-                    if (path[i] == C.SOLIDUS) {
-                        path[i] = C.REVERSE_SOLIDUS;
-                    }
-                }
-            }
+            String path = new String(client.getUrl().getPath().getBytes());
 
             int hashCode = Arrays.hashCode(url.getQuery());
 
-            dir = user + File.separator + url.getDomain() + "." + url.getPort() + File.separator + new String(path);
+            dir = user + File.separator + url.getDomain() + "." + url.getPort() + File.separator + path;
             fileData = dir + File.separator + hashCode + extData;
             fileInfo = dir + File.separator + hashCode + extInfo;
         }
