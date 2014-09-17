@@ -47,13 +47,6 @@ public class HttpUrl implements Comparable<HttpUrl> {
     }
 
     private void parseUrl(HttpUrl httpUrl, byte[] url) throws ParseException {
-        /*scheme = httpUrl.scheme;
-        domain = httpUrl.domain;
-        port = httpUrl.port;
-        path = httpUrl.path;
-        query = httpUrl.query;
-        fragment = httpUrl.fragment;*/
-
         if (url == null) {
             return;
         }
