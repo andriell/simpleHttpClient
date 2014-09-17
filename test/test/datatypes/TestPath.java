@@ -35,6 +35,24 @@ public class TestPath {
         test(path0.isSubPath(path4, false), true);
         test(path0.isSubPath(path5, false), true);
         test(path0.isSubPath(path6, false), true);
+
+
+        Path path10 = new Path(new String("/abs/dabs").getBytes());
+        path10.add("/A/a".getBytes());
+        System.out.println(path10);
+        Path path11 = new Path(new String("/abs/dabs").getBytes());
+        path11.add("A/a".getBytes());
+        System.out.println(path11);
+        Path path20 = new Path(new String("/abs/dabs/").getBytes());
+        path20.add("/A/a".getBytes());
+        System.out.println(path20);
+        Path path21 = new Path(new String("/abs/dabs/").getBytes());
+        path21.add("A/a".getBytes());
+        System.out.println(path21);
+
+        Path path30 = new Path(new String("/").getBytes());
+        path30.add("/".getBytes());
+        System.out.println(path30);
     }
 
     public static void test(boolean val, boolean good) {

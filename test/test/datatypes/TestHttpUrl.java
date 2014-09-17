@@ -33,16 +33,20 @@ public class TestHttpUrl {
         print("http://ABC.com:/%7esmith/home.html");
         print("https://www.google.ru:123/search?q=Coocie&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:ru:official&request=firefox-a&channel=sb&gfe_rd=cr&ei=eZQFVJf_J8zEYNSOgdgM#channel=sb&newwindow=1&q=cookie+specification&rls=org.mozilla:ru:official");
         print("https://www.google.ru:123?q=Coocie&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:ru:official&request=firefox-a&channel=sb&gfe_rd=cr&ei=eZQFVJf_J8zEYNSOgdgM#channel=sb&newwindow=1&q=cookie+specification&rls=org.mozilla:ru:official");
+        print("https://www.google.ru:123#channel=sb&newwindow=1&q=cookie+specification&rls=org.mozilla:ru:official");
+        print("https://www.google.ru/search?q=Coocie&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:ru:official&request=firefox-a&channel=sb&gfe_rd=cr&ei=eZQFVJf_J8zEYNSOgdgM#channel=sb&newwindow=1&q=cookie+specification&rls=org.mozilla:ru:official");
+        print("https://www.google.ru?q=Coocie&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:ru:official&request=firefox-a&channel=sb&gfe_rd=cr&ei=eZQFVJf_J8zEYNSOgdgM#channel=sb&newwindow=1&q=cookie+specification&rls=org.mozilla:ru:official");
+        print("https://www.google.ru#channel=sb&newwindow=1&q=cookie+specification&rls=org.mozilla:ru:official");
 
-        /*HttpUrl httpUrl4 = new HttpUrl(httpUrl3, "https://ya.ru/a/a/index.php".getBytes());
+        HttpUrl httpUrl4 = new HttpUrl(httpUrl3, "https://ya.ru/a/a/index.php?q=1#123".getBytes());
         print(httpUrl4);
         System.out.println();
-        HttpUrl httpUrl5 = new HttpUrl(httpUrl3, "/a/a/index.php".getBytes());
+        HttpUrl httpUrl5 = new HttpUrl(httpUrl3, "/a/a/index.php?q=1#123".getBytes());
         print(httpUrl5);
         System.out.println();
-        HttpUrl httpUrl6 = new HttpUrl(httpUrl3, "b/index.php".getBytes());
+        HttpUrl httpUrl6 = new HttpUrl(httpUrl3, "b/index.php?q=1#123".getBytes());
         print(httpUrl6);
-        System.out.println();*/
+        System.out.println();
     }
 
     public static void print(HttpUrl urlNew) throws Exception {

@@ -1,6 +1,7 @@
 package http.datatypes;
 
 import http.helper.ArrayHelper;
+import http.helper.C;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
@@ -54,6 +55,36 @@ public class Path implements Comparable<Path> {
         }
 
         return i < lSubPath && subPath.data[i] == 47;
+    }
+
+    public void add(Path path) {
+        add(path.getBytes());
+    }
+
+    public void add(byte[] path) {
+        if ((path == null) || (path != null && path.length < 1))
+            return;
+
+        if ((data == null) || (data != null && data.length < 1)) {
+            data = ArrayHelper.clone(path);
+        } else {
+            if (data[data.length - 1] == C.SOLIDUS) {
+                if (path[0] == C.SOLIDUS) {
+                    byte[] oldData = data;
+                    data = new byte[data.length + path.length - 1];
+                    System.arraycopy(oldData, 0, data, 0, oldData.length - 1);
+                    System.arraycopy(path, 0, data, oldData.length - 1, path.length);
+                } else {
+                    data = ArrayHelper.concat(data, path);
+                }
+            } else {
+                if (path[0] == C.SOLIDUS) {
+                    data = ArrayHelper.concat(data, path);
+                } else {
+                    data = ArrayHelper.concat(data, C.BS_SOLIDUS, path);
+                }
+            }
+        }
     }
 
     public int length() {

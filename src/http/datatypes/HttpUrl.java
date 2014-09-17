@@ -47,29 +47,38 @@ public class HttpUrl implements Comparable<HttpUrl> {
     }
 
     private void parseUrl(HttpUrl httpUrl, byte[] url) throws ParseException {
+        /*scheme = httpUrl.scheme;
+        domain = httpUrl.domain;
+        port = httpUrl.port;
+        path = httpUrl.path;
+        query = httpUrl.query;
+        fragment = httpUrl.fragment;*/
+
         if (url == null) {
             return;
         }
 
-        int l = url.length;
-        // http://a.ru
-        if (l < 11) {
-            throw new ParseException(new String(url) + ".length < 11", l);
-        }
-
         int startIndex = parseScheme(url);
         if (scheme == null) {
-            throw new ParseException(new String(url, 0, 10) + " - unknown scheme", 0);
+            scheme = httpUrl.scheme;
+            domain = httpUrl.domain;
+            if (url[0] == C.SOLIDUS) {
+                startIndex = parsePath(url, 0);
+                parseQuery(url, startIndex);
+            } else {
+                Path oldPath = path;
+                startIndex = parsePath(url, 0);
+                oldPath.add(path);
+                path = oldPath;
+                parseQuery(url, startIndex);
+            }
         } else {
-            startIndex++;
             startIndex = parseDomain(url, startIndex);
             if (domain == null) {
                 throw new ParseException(new String(url, 0, 10) + " - unknown domain", startIndex);
             }
-            startIndex++;
             startIndex = parsePath(url, startIndex);
-            startIndex++;
-            startIndex = parseQuery(url, startIndex);
+            parseQuery(url, startIndex);
         }
     }
 
@@ -93,12 +102,12 @@ public class HttpUrl implements Comparable<HttpUrl> {
             throw new ParseException(new String(url, 0, 10) + " - unknown domain", startIndex);
         }
         startIndex = parsePath(url, startIndex);
-        startIndex = parseQuery(url, startIndex);
+        parseQuery(url, startIndex);
     }
 
-    private int parseScheme(byte[] url) throws ParseException {
-        if (url.length < 11) {
-            throw new ParseException(new String(url) + ".length < 11", url.length);
+    private int parseScheme(byte[] url) {
+        if (url.length < 9) {
+            return 0;
         }
         //             h    t    t    p    s    :   /   /
         // HTTPS:// = {72,  84,  84,  80,  83,  58, 47, 47}
@@ -127,10 +136,10 @@ public class HttpUrl implements Comparable<HttpUrl> {
                 return 8;
             }
         }
-        throw new ParseException(new String(url, 0, 10) + " - unknown scheme", 0);
+        return 0;
     }
 
-    private int parseDomain(byte[] url, int startIndex) throws ParseException {
+    private int parseDomain(byte[] url, int startIndex) {
         int l = url.length;
         if (!(-1 < startIndex && startIndex < l)) {
             return startIndex;
@@ -161,7 +170,7 @@ public class HttpUrl implements Comparable<HttpUrl> {
         return l;
     }
 
-    private int parsePath(byte[] url, int startIndex) throws ParseException {
+    private int parsePath(byte[] url, int startIndex) {
         int l = url.length;
         if (!(-1 < startIndex && startIndex < l)) {
             return startIndex;
@@ -185,26 +194,26 @@ public class HttpUrl implements Comparable<HttpUrl> {
         return l;
     }
 
-    private int parseQuery(byte[] url, int startIndex) throws ParseException {
+    private void parseQuery(byte[] url, int startIndex) {
         int l = url.length;
         if (!(-1 < startIndex && startIndex < l)) {
-            return startIndex;
+            return;
         }
         if (url[startIndex] == C.NUMBER_SIGN) {
             // # NUMBER SIGN:35
             fragment = Arrays.copyOfRange(url, startIndex + 1, l);
-            return startIndex;
+            return;
         }
 
         for (int i = startIndex; i < l; i++) {
             if (url[i] == C.NUMBER_SIGN) { // # NUMBER SIGN:35
                 query = Arrays.copyOfRange(url, startIndex + 1, i);
                 fragment = Arrays.copyOfRange(url, i + 1, l);
-                return l;
+                return;
             }
         }
         query = Arrays.copyOfRange(url, startIndex + 1, l);
-        return l;
+        return;
     }
 
     public HttpUrlSheme getScheme() {

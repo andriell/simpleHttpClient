@@ -6,14 +6,45 @@ import java.security.MessageDigest;
  * Created by arybalko on 05.09.14.
  */
 public class ArrayHelper {
+    public static byte[] clone(byte[] in) {
+        if (in == null) {
+            return null;
+        }
+        byte[] r = new byte[in.length];
+        System.arraycopy(in, 0, r, 0, in.length);
+        return r;
+    }
+
+    public static byte[] concat(byte[] a, byte[] b) {
+        byte[] r = new byte[a.length + b.length];
+        int l = 0;
+        System.arraycopy(a, 0, r, l, a.length);
+        l += a.length;
+        System.arraycopy(b, 0, r, l, b.length);
+        return r;
+    }
+
     public static byte[] concat(byte[] a, byte[] b, byte[] c) {
-        int aLen = a.length;
-        int bLen = b.length;
-        int cLen = c.length;
-        byte[] r = new byte[aLen + bLen + cLen];
-        System.arraycopy(a, 0, r, 0, aLen);
-        System.arraycopy(b, 0, r, aLen, bLen);
-        System.arraycopy(c, 0, r, aLen + bLen, cLen);
+        byte[] r = new byte[a.length + b.length + c.length];
+        int l = 0;
+        System.arraycopy(a, 0, r, l, a.length);
+        l += a.length;
+        System.arraycopy(b, 0, r, l, b.length);
+        l += b.length;
+        System.arraycopy(c, 0, r, l, c.length);
+        return r;
+    }
+
+    public static byte[] concat(byte[] a, byte[] b, byte[] c, byte[] d) {
+        byte[] r = new byte[a.length + b.length + c.length + d.length];
+        int l = 0;
+        System.arraycopy(a, 0, r, l, a.length);
+        l += a.length;
+        System.arraycopy(b, 0, r, l, b.length);
+        l += b.length;
+        System.arraycopy(c, 0, r, l, c.length);
+        l += c.length;
+        System.arraycopy(c, 0, r, l, d.length);
         return r;
     }
 
@@ -61,6 +92,9 @@ public class ArrayHelper {
      * @return
      */
     public static byte[] toLowerCase(final byte[] a) {
+        if (a == null) {
+            return null;
+        }
         int aLen = a.length;
         byte[] r = new byte[aLen];
         for (int i = 0; i < aLen; i++) {
