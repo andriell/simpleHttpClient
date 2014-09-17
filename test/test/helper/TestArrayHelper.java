@@ -15,6 +15,7 @@ public class TestArrayHelper {
     }
 
     void go() throws Exception {
+        test("1", 0, 0, 10, 1, false);
         test("10", 0, 1, 10, 10, false);
         test("+10", 0, 2, 10, 10, false);
         test("-010", 0, 3, 10, -10, false);

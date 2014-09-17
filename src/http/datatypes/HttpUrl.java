@@ -42,7 +42,29 @@ public class HttpUrl implements Comparable<HttpUrl> {
         this.charset = charset;
     }
 
-    private HttpUrlSheme parseScheme(byte[] url) throws ParseException {
+    public HttpUrl(HttpUrl httpUrl, byte[] url) throws ParseException {
+        if (url == null) {
+            return;
+        }
+        parseScheme(url);
+        if (scheme != null) {
+            parseUrl(url);
+            return;
+        }
+        if (url[0] == C.SOLIDUS) {
+            scheme = httpUrl.scheme;
+            domain = httpUrl.domain;
+            parseUrl(url);
+        } else {
+
+        }
+
+    }
+
+    private int parseScheme(byte[] url) throws ParseException {
+        if (url.length < 11) {
+            throw new ParseException(new String(url) + ".length < 11", url.length);
+        }
         //             h    t    t    p    s    :   /   /
         // HTTPS:// = {72,  84,  84,  80,  83,  58, 47, 47}
         // https:// = {104, 116, 116, 112, 115, 58, 47, 47}
@@ -57,7 +79,8 @@ public class HttpUrl implements Comparable<HttpUrl> {
                 && url[5] == 47
                 && url[6] == 47
             ) {
-                return HttpUrlSheme.http;
+                scheme = HttpUrlSheme.http;
+                return 6;
             }
             if (
                 (url[4] == 83 || url[4] == 115)
@@ -65,10 +88,31 @@ public class HttpUrl implements Comparable<HttpUrl> {
                 && url[6] == 47
                 && url[7] == 47
             ) {
-                return HttpUrlSheme.https;
+                scheme = HttpUrlSheme.https;
+                return 7;
             }
         }
-        return null;
+        throw new ParseException(new String(url, 0, 10) + " - unknown scheme", 0);
+    }
+
+    private void parseDomain(byte[] url, int startIndex) throws ParseException {
+        Domain r;
+        int startPort = -1;
+        for (int i = startIndex; i < url.length; i++) {
+            if (url[i] == 58) { // : COLON:58
+                domain = new Domain(Arrays.copyOfRange(url, startIndex, i));
+                startPort = i;
+            } else if (url[i] == 47 || url[i] == 63 || url[i] == 35) {
+                // / SOLIDUS:47
+                // ? QUESTION MARK:63
+                // # NUMBER SIGN:35
+                if (startPort > -1) {
+                    port = ArrayHelper.parseInt(url, startPort + 1, i - 1, 10, -1);
+                } else {
+                    domain = new Domain(Arrays.copyOfRange(url, startIndex, i));
+                }
+            }
+        }
     }
 
     private void parseUrl(byte[] url) throws ParseException {
@@ -79,29 +123,24 @@ public class HttpUrl implements Comparable<HttpUrl> {
             throw new ParseException(new String(url) + ".length < 11", l);
         }
 
-        int startDomain = 0;
+        int startDomain = -1;
 
         //<editor-fold desc="scheme">
-        scheme = parseScheme(url);
-        if (scheme == HttpUrlSheme.http) {
-            startDomain = 7;
-        } else if (scheme == HttpUrlSheme.https) {
-            startDomain = 8;
-        } else {
-            throw new ParseException(new String(url, 0, 10) + " - unknown scheme", 0);
+        if (scheme == null) {
+            startDomain = parseScheme(url);
         }
         //</editor-fold>
 
-        int startPort = 0;
-        int startPath = 0;
-        int startQuery = 0;
-        int startFragment = 0;
+        int startPort = -1;
+        int startPath = -1;
+        int startQuery = -1;
         for (int i = startDomain; i < l; i++) {
             if (url[i] == 58 && domain == null) { // : COLON:58
                 domain = new Domain(Arrays.copyOfRange(url, startDomain, i));
                 startPort = i;
             } else if (url[i] == 47) { // / SOLIDUS:47
-                if (startPath < 1) {
+                if (startPath < 0) {
+                    System.out.println(i);
                     startPath = i;
                 }
                 if (startPort > 0) {
@@ -111,29 +150,30 @@ public class HttpUrl implements Comparable<HttpUrl> {
                     domain = new Domain(Arrays.copyOfRange(url, startDomain, i));
                 }
             } else if (url[i] == 63) { // ? QUESTION MARK:63
-                if (startQuery < 1) {
+                if (startQuery < 0) {
                     startQuery = i + 1;
                 }
-                if (path == null && 0 < startPath) {
+                if (path == null && -1 < startPath) {
                     path = new Path(Arrays.copyOfRange(url, startPath, i));
                 }
             } else if (url[i] == 35) { // # NUMBER SIGN:35
                 fragment = Arrays.copyOfRange(url, i + 1, l);
-                if (query == null && 0 < startQuery) {
+                if (query == null && -1 < startQuery) {
                     query = Arrays.copyOfRange(url, startQuery, i);
                 }
-                if (path == null && 0 < startPath) {
+                if (path == null && -1 < startPath) {
                     path = new Path(Arrays.copyOfRange(url, startPath, i));
                 }
+                break;
             }
         }
-        if (domain == null && 0 < startDomain) {
+        if (domain == null && -1 < startDomain) {
             domain = new Domain(Arrays.copyOfRange(url, startDomain, l));
         }
-        if (query == null && 0 < startQuery) {
+        if (query == null && -1 < startQuery) {
             query = Arrays.copyOfRange(url, startQuery, l);
         }
-        if (path == null && 0 < startPath) {
+        if (path == null && -1 < startPath) {
             path = new Path(Arrays.copyOfRange(url, startPath, l));
         }
         if (path == null) {

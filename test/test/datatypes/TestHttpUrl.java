@@ -33,10 +33,18 @@ public class TestHttpUrl {
         print("http://ABC.com:/%7esmith/home.html");
         print("https://www.google.ru:123/search?q=Coocie&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:ru:official&request=firefox-a&channel=sb&gfe_rd=cr&ei=eZQFVJf_J8zEYNSOgdgM#channel=sb&newwindow=1&q=cookie+specification&rls=org.mozilla:ru:official");
 
+        HttpUrl httpUrl4 = new HttpUrl(httpUrl3, "https://ya.ru/a/a/index.php".getBytes());
+        print(httpUrl4);
+        System.out.println();
+        HttpUrl httpUrl5 = new HttpUrl(httpUrl3, "/a/a/index.php".getBytes());
+        print(httpUrl5);
+        System.out.println();
+        HttpUrl httpUrl6 = new HttpUrl(httpUrl3, "b/index.php".getBytes());
+        print(httpUrl6);
+        System.out.println();
     }
 
-    public static void print(String url) throws Exception {
-        HttpUrl urlNew = new HttpUrl(url);
+    public static void print(HttpUrl urlNew) throws Exception {
         System.out.println("Scheme: " + urlNew.getScheme());
         System.out.println("Domain: " + urlNew.getDomain());
         System.out.println("Port: " + urlNew.getPort());
@@ -47,6 +55,11 @@ public class TestHttpUrl {
         if (urlNew.getFragment() != null) {
             System.out.println("Fragment: " + new String(urlNew.getFragment()));
         }
+    }
+
+    public static void print(String url) throws Exception {
+        HttpUrl urlNew = new HttpUrl(url);
+        print(urlNew);
         System.out.println(url + "\n" + urlNew.toString());
         System.out.println();
     }
