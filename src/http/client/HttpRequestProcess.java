@@ -124,12 +124,12 @@ public class HttpRequestProcess implements Runnable {
         // Редиректы
         HttpUrl location = null;
         if (headerResponse.getStatusCode() == 301) { // Постоянно перемещен
-            location = new HttpUrl(headerResponse.get(HttpHeaders.location));
+            location = new HttpUrl(url, headerResponse.get(HttpHeaders.location));
             if (redirectManager != null) {
                 redirectManager.set(url, location);
             }
         } else if (headerResponse.getStatusCode() == 302) { // Временно перемещен
-            location = new HttpUrl(headerResponse.get(HttpHeaders.location));
+            location = new HttpUrl(url, headerResponse.get(HttpHeaders.location));
         }
         if (location != null) {
             url = location;
