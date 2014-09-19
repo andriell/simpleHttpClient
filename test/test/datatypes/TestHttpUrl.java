@@ -1,6 +1,7 @@
 package test.datatypes;
 
 import http.datatypes.HttpUrl;
+import test.Test;
 
 /**
  * Created by Андрей on 03.08.14.
@@ -52,6 +53,11 @@ public class TestHttpUrl {
         HttpUrl httpUrl11 = new HttpUrl(httpUrl10, "?ia=M&lf=F&af=22&at=29&s_c=3159_3529_3538_0&wp=1&geo=0&t=a&offset=0&nchanged=1410971300&noid=1051171926".getBytes());
         print(httpUrl11);
         System.out.println(httpUrl11);
+
+        HttpUrl httpUrl20 = new HttpUrl("https://ya.ru:8080/a/search.phtml?t=a&form=1#fragment");
+        Test.t(httpUrl20.toString(true, true, true, true, true, true), "https://ya.ru:8080/a/search.phtml?t=a&form=1#fragment", "toString 1");
+        Test.t(httpUrl20.toString(false, true, false, true, false, true), "ya.ru/a/search.phtml#fragment", "toString 2");
+        Test.t(httpUrl20.toString(true, false, true, false, true, false), "https://:8080?t=a&form=1", "toString 3");
     }
 
     public static void print(HttpUrl urlNew) throws Exception {

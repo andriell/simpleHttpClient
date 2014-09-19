@@ -282,89 +282,72 @@ public class HttpUrl implements Comparable<HttpUrl> {
         return charset;
     }
 
-    public byte[] domainPort() {
-        int l = domain.length();
-        byte[] port = null;
-        if (this.port > 0) {
-            port = ArrayHelper.intToArry(this.port);
-            l += C.BS_COLON.length + port.length;
+    public byte[] getBytes(boolean scheme, boolean domain, boolean port, boolean path, boolean query, boolean fragment) {
+        int l = 0;
+        if (scheme) {
+            l += this.scheme.name().length() + C.BS_COLON_SS.length;
+        }
+        if (domain) {
+            l += this.domain.length();
+        }
+        byte[] portByte = null;
+        if (port && this.port > 0) {
+            portByte = ArrayHelper.intToArry(this.port);
+            l += C.BS_COLON.length + portByte.length;
+        }
+        if (path) {
+            l += this.path.length();
+        }
+        if (query && this.query != null) {
+            l += C.BS_QUESTION.length + this.query.length;
+        }
+        if (fragment && this.fragment != null) {
+            l += C.BS_NUMBER_SIGN.length + this.fragment.length;
         }
 
         byte[] r = new byte[l];
         l = 0;
-
-        System.arraycopy(domain.getBytes(), 0, r, l, domain.length());
-        l += domain.length();
-        if (port != null) {
+        if (scheme) {
+            System.arraycopy(this.scheme.name().getBytes(), 0, r, l, this.scheme.name().length());
+            l += this.scheme.name().length();
+            System.arraycopy(C.BS_COLON_SS, 0, r, l, C.BS_COLON_SS.length);
+            l += C.BS_COLON_SS.length;
+        }
+        if (domain) {
+            System.arraycopy(this.domain.getBytes(), 0, r, l, this.domain.length());
+            l += this.domain.length();
+        }
+        if (portByte != null) {
             System.arraycopy(C.BS_COLON, 0, r, l, C.BS_COLON.length);
             l += C.BS_COLON.length;
-            System.arraycopy(port, 0, r, l, port.length);
-            l += port.length;
+            System.arraycopy(portByte, 0, r, l, portByte.length);
+            l += portByte.length;
         }
-
-        return r;
-    }
-
-    public byte[] domainPathParam() {
-        int l = scheme.name().length()
-                + C.BS_COLON_SS.length
-                + domain.length();
-        byte[] port = null;
-        if (this.port > 0) {
-            port = ArrayHelper.intToArry(this.port);
-            l += C.BS_COLON.length + port.length;
+        if (path) {
+            System.arraycopy(this.path.getBytes(), 0, r, l, this.path.length());
+            l += this.path.length();
         }
-        l += path.length();
-        if (query != null) {
-            l += C.BS_QUESTION.length + query.length;
-        }
-
-        byte[] r = new byte[l];
-        l = 0;
-
-        System.arraycopy(scheme.name().getBytes(), 0, r, l, scheme.name().length());
-        l += scheme.name().length();
-        System.arraycopy(C.BS_COLON_SS, 0, r, l, C.BS_COLON_SS.length);
-        l += C.BS_COLON_SS.length;
-        System.arraycopy(domain.getBytes(), 0, r, l, domain.length());
-        l += domain.length();
-        if (this.port > 0) {
-            System.arraycopy(C.BS_COLON, 0, r, l, C.BS_COLON.length);
-            l += C.BS_COLON.length;
-            System.arraycopy(port, 0, r, l, port.length);
-            l += port.length;
-        }
-        System.arraycopy(path.getBytes(), 0, r, l, path.length());
-        l += path.length();
-        if (query != null) {
+        if (query && this.query != null) {
             System.arraycopy(C.BS_QUESTION, 0, r, l, C.BS_QUESTION.length);
             l += C.BS_QUESTION.length;
-            System.arraycopy(query, 0, r, l, query.length);
-            l += query.length;
+            System.arraycopy(this.query, 0, r, l, this.query.length);
+            l += this.query.length;
         }
-
+        if (fragment && this.fragment != null) {
+            System.arraycopy(C.BS_NUMBER_SIGN, 0, r, l, C.BS_NUMBER_SIGN.length);
+            l += C.BS_NUMBER_SIGN.length;
+            System.arraycopy(this.fragment, 0, r, l, this.fragment.length);
+            l += this.fragment.length;
+        }
         return r;
     }
 
     public byte[] getBytes() {
-        byte[] domainPath = domainPathParam();
-        int l = domainPath.length;
-        if (fragment != null) {
-            l += C.BS_NUMBER_SIGN.length + fragment.length;
-        }
+        return getBytes(true, true, true, true, true, true);
+    }
 
-        byte[] r = new byte[l];
-        l = 0;
-
-        System.arraycopy(domainPath, 0, r, l, domainPath.length);
-        l += domainPath.length;
-        if (fragment != null) {
-            System.arraycopy(C.BS_NUMBER_SIGN, 0, r, l, C.BS_NUMBER_SIGN.length);
-            l += C.BS_NUMBER_SIGN.length;
-            System.arraycopy(fragment, 0, r, l, fragment.length);
-            l += fragment.length;
-        }
-        return r;
+    public String toString(boolean scheme, boolean domain, boolean port, boolean path, boolean query, boolean fragment) {
+        return new String(getBytes(scheme, domain, port, path, query, fragment));
     }
 
     @Override

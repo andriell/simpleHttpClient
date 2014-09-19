@@ -62,8 +62,8 @@ public class HttpHeaderRequest {
     }
 
     public void url(HttpUrl url) {
-        requestURI = url.domainPathParam();
-        set(HttpHeaders.host, url.domainPort());
+        requestURI = url.getBytes(true, true, true, true, true, false);
+        set(HttpHeaders.host, url.getBytes(false, true, true, false, false, false));
     }
 
     //<editor-fold desc="Getters and Setters Static">
