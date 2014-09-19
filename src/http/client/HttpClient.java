@@ -49,6 +49,33 @@ public class HttpClient {
     }
 
     //<editor-fold desc="Download">
+    public void download(String user, HttpUrl url, String file) {
+        HttpRequestProcess client = newRequest();
+        client.setUser(user);
+        client.setUrl(url);
+        download(client, new File(file));
+    }
+
+    public void download(String user, HttpUrl url, File file) {
+        HttpRequestProcess client = newRequest();
+        client.setUser(user);
+        client.setUrl(url);
+        download(client, file);
+    }
+
+    public void download(String user, String url, String file) {
+        HttpRequestProcess client = newRequest();
+        try {
+            client.setUser(user);
+            client.setUrl(new HttpUrl(url));
+            download(client, new File(file));
+        } catch (Exception e) {
+            if (exceptionHandler != null) {
+                exceptionHandler.exception(e, client);
+            }
+        }
+    }
+
     public void download(String user, String url, File file) {
         HttpRequestProcess client = newRequest();
         try {
