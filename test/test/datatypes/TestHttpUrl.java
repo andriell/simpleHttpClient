@@ -58,6 +58,27 @@ public class TestHttpUrl {
         Test.t(httpUrl20.toString(true, true, true, true, true, true), "https://ya.ru:8080/a/search.phtml?t=a&form=1#fragment", "toString 1");
         Test.t(httpUrl20.toString(false, true, false, true, false, true), "ya.ru/a/search.phtml#fragment", "toString 2");
         Test.t(httpUrl20.toString(true, false, true, false, true, false), "https://:8080?t=a&form=1", "toString 3");
+
+        HttpUrl httpUrl100 = new HttpUrl("http://www.mamba.ru/mb1297962920?hit=3");
+        HttpUrl httpUrl101 = new HttpUrl("http://www.mamba.ru/mb1297962920?hit=3");
+        HttpUrl httpUrl200 = new HttpUrl("http://www.mamba.ru/mb1321329020?hit=3");
+        HttpUrl httpUrl300 = new HttpUrl("http://www.mamba.ru/marinamelihova?hit=3");
+        System.out.println(httpUrl100.hashCode());
+        System.out.println(httpUrl200.hashCode());
+        System.out.println(httpUrl300.hashCode());
+        System.out.println(httpUrl100.equals(httpUrl101));
+        System.out.println(httpUrl100.equals(httpUrl300));
+        System.out.println(httpUrl100.equals(httpUrl300));
+
+        System.out.println(httpUrl100.compareTo(httpUrl101));
+        System.out.println(httpUrl100.compareTo(httpUrl200));
+        System.out.println(httpUrl100.compareTo(httpUrl300));
+
+        System.out.println(httpUrl200.compareTo(httpUrl100));
+        System.out.println(httpUrl200.compareTo(httpUrl300));
+
+        System.out.println(httpUrl300.compareTo(httpUrl100));
+        System.out.println(httpUrl300.compareTo(httpUrl200));
     }
 
     public static void print(HttpUrl urlNew) throws Exception {

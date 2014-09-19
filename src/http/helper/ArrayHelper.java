@@ -107,6 +107,20 @@ public class ArrayHelper {
     }
 
     public static int compare(byte[] b1, byte[] b2) {
+        if (b1 == b2) {
+            return 0;
+        }
+        if (b1 == null) {
+            if (b2 == null) {
+                return 0;
+            } else {
+                return 1;
+            }
+        } else {
+            if (b2 == null) {
+                return -1;
+            }
+        }
         int len1 = b1.length;
         int len2 = b2.length;
         int lim = Math.min(len1, len2);

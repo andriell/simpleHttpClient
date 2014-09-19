@@ -246,25 +246,8 @@ public class HttpUrl implements Comparable<HttpUrl>, Cloneable {
 
     public byte[] getPathDecode() {
         if (pathDecode == null) {
-            int l = path.length();
-            if (query != null) {
-                l += C.BS_QUESTION.length + query.length;
-            }
-
-            pathDecode = new byte[l];
-
-            l = 0;
-            System.arraycopy(path.getBytes(), 0, pathDecode, l, path.length());
-            l += path.length();
-            if (query != null) {
-                System.arraycopy(C.BS_QUESTION, 0, pathDecode, l, C.BS_QUESTION.length);
-                l += C.BS_QUESTION.length;
-                System.arraycopy(query, 0, pathDecode, l, query.length);
-                l += query.length;
-            }
-
             try {
-                pathDecode = URLDecoder.decode(new String(pathDecode), charset).getBytes();
+                pathDecode = URLDecoder.decode(toString(false, false, false, true, true, false), charset).getBytes();
             } catch (UnsupportedEncodingException e) {}
         }
         return pathDecode;
@@ -383,42 +366,58 @@ public class HttpUrl implements Comparable<HttpUrl>, Cloneable {
 
     @Override
     public int compareTo(HttpUrl o) {
+        if (this == o) {
+            return 0;
+        }
         int r = 0;
-        if (scheme != o.scheme) {
-            if (scheme == null) {
-                return 1;
-            }
+        //<editor-fold desc="scheme">
+        if (scheme == null) {
             if (o.scheme == null) {
-                return -1;
+                r = 0;
+            } else {
+                r = 1;
             }
-            return scheme.compareTo(o.scheme);
+        } else {
+            if (o.scheme == null) {
+                r = -1;
+            } else {
+                r = scheme.compareTo(o.scheme);
+            }
         }
-        if (domain != o.domain) {
-            if (domain == null) {
-                return 1;
-            }
+        if (r != 0) {
+            return r;
+        }
+        //</editor-fold>
+        //<editor-fold desc="domain">
+        if (domain == null) {
             if (o.domain == null) {
-                return -1;
+                r = 0;
+            } else {
+                r = 1;
             }
-            return domain.compareTo(o.domain);
+        } else {
+            if (o.domain == null) {
+                r = -1;
+            } else {
+                r = domain.compareTo(o.domain);
+            }
         }
+        if (r != 0) {
+            return r;
+        }
+        //</editor-fold>
+        //<editor-fold desc="port">
         if (port != o.port) {
             return port - o.port;
         }
+        //</editor-fold>
+        //<editor-fold desc="getPathDecode">
         r = ArrayHelper.compare(getPathDecode(), o.getPathDecode());
         if (r != 0) {
             return r;
         }
-        if (fragment != o.fragment) {
-            if (fragment == null) {
-                return 1;
-            }
-            if (o.fragment == null) {
-                return -1;
-            }
-            return ArrayHelper.compare(fragment, o.fragment);
-        }
-        return 0;
+        //</editor-fold>
+        return ArrayHelper.compare(fragment, o.fragment);
     }
 
     @Override
