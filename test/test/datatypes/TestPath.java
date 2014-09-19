@@ -53,6 +53,10 @@ public class TestPath {
         Path path30 = new Path(new String("/").getBytes());
         path30.add("/".getBytes());
         System.out.println(path30);
+
+        Path path50 = new Path(new String(".txt").getBytes());
+        System.out.println(new String(path50.filenameExtension()));
+        System.out.println(path50.filenameExtension().length);
     }
 
     public static void test(boolean val, boolean good) {

@@ -29,6 +29,9 @@ public class TestByteArray {
         System.out.println(ArrayHelper.equalIgnoreCase(bytes2, bytes4));
 
         System.out.println(new String("Attribute"));
+
+        byte[] bytes5 = new byte[0];
+        System.out.println(bytes5.length);
     }
 
     static void print(String c) {

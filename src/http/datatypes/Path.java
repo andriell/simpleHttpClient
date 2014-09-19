@@ -3,7 +3,6 @@ package http.datatypes;
 import http.helper.ArrayHelper;
 import http.helper.C;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 /**
@@ -89,6 +88,36 @@ public class Path implements Comparable<Path>, Cloneable {
                 }
             }
         }
+    }
+
+    public String filenameExtensionS() {
+        byte[] r = filenameExtension();
+        if (r == null) {
+            return null;
+        }
+        return new String(r);
+    }
+
+    // filename extension
+    public byte[] filenameExtension() {
+        if (data == null) {
+            return null;
+        }
+        int l = data.length;
+        if (l < 2) {
+            return null;
+        }
+        if (data[l - 1] == C.FULL_STOP) {
+            return null;
+        }
+        for(int i = l - 2; i >= 0; i--) {
+            if (data[i] == C.FULL_STOP) {
+                byte[] r = new byte[l - i - 1];
+                System.arraycopy(data, i + 1, r, 0, r.length);
+                return r;
+            }
+        }
+        return null;
     }
 
     public int length() {
