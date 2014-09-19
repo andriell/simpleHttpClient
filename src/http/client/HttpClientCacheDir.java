@@ -71,7 +71,12 @@ public class HttpClientCacheDir implements HttpClientCache {
     }
 
     public void save(HttpRequestProcess client, byte[] data, byte[] charset, int time) throws IOException {
-        if (!client.getMethod().equals(HttpRequestMethod.GET)) {
+        int code = client.getHeaderResponse().getStatusCode();
+        if (!(
+            client.getMethod().equals(HttpRequestMethod.GET)
+            && 200 <= code && code < 300
+            && 0 < data.length
+        )) {
             return;
         }
         CacheFile cache = new CacheFile(client);
