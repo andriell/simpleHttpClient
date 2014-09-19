@@ -8,7 +8,7 @@ import java.util.Arrays;
 /**
  * Created by arybalko on 26.08.14.
  */
-public class Domain implements Comparable<Domain> {
+public class Domain implements Comparable<Domain>, Cloneable {
     private byte[] data;
 
     public Domain(byte[] data) {
@@ -82,5 +82,12 @@ public class Domain implements Comparable<Domain> {
     @Override
     public int compareTo(Domain o) {
         return ArrayHelper.compare(data, o.data);
+    }
+
+    @Override
+    protected Domain clone() throws CloneNotSupportedException {
+        Domain r = (Domain) super.clone();
+        r.data = data.clone();
+        return r;
     }
 }

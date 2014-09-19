@@ -12,7 +12,7 @@ import java.util.Arrays;
 /**
  * Created by Андрей on 03.08.14.
  */
-public class HttpUrl implements Comparable<HttpUrl> {
+public class HttpUrl implements Comparable<HttpUrl>, Cloneable {
     private HttpUrlSheme scheme;
     private Domain domain = null;
     private Integer port = 0;
@@ -419,5 +419,22 @@ public class HttpUrl implements Comparable<HttpUrl> {
             return ArrayHelper.compare(fragment, o.fragment);
         }
         return 0;
+    }
+
+    @Override
+    protected HttpUrl clone() throws CloneNotSupportedException {
+        HttpUrl r = (HttpUrl) super.clone();
+        r.scheme = scheme;
+        r.domain = domain.clone();
+        r.port = port;
+        r.path = path.clone();
+        r.pathDecode = pathDecode.clone();
+        r.query = query.clone();
+        r.fragment = fragment.clone();
+
+        r.charset = charset;
+        r.hashCode = hashCode;
+
+        return r;
     }
 }

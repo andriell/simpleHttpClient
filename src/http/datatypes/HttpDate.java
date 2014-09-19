@@ -7,7 +7,7 @@ import java.util.Date;
 /**
  * Created by arybalko on 25.08.14.
  */
-public class HttpDate implements Comparable<HttpDate> {
+public class HttpDate implements Comparable<HttpDate>, Cloneable {
     Date date;
 
     public HttpDate() {
@@ -89,5 +89,12 @@ public class HttpDate implements Comparable<HttpDate> {
             return 1;
         }
         return 0;
+    }
+
+    @Override
+    protected HttpDate clone() throws CloneNotSupportedException {
+        HttpDate r = (HttpDate) super.clone();
+        r.date = (Date) date.clone();
+        return r;
     }
 }
