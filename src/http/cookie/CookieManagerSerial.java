@@ -68,7 +68,10 @@ public class CookieManagerSerial implements CookieManager {
             userMap.put(domain, domainSet);
         }
 
-        domainSet.add(httpCookie);
+        if (!domainSet.add(httpCookie)) {
+            domainSet.remove(httpCookie);
+            domainSet.add(httpCookie);
+        };
     }
 
     @Override
