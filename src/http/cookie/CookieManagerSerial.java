@@ -46,11 +46,6 @@ public class CookieManagerSerial implements CookieManager {
 
     @Override
     public void set(String user, Domain domain, Cookie httpCookie) {
-        long now = new HttpDate().getTime();
-        HttpDate expires = httpCookie.getExpires();
-        if (expires != null && expires.getTime() <= now) {
-            return;
-        }
         CookieDomain cookieDomain = httpCookie.getDomain();
         if (cookieDomain != null && !cookieDomain.forDomain(domain)) {
             return;
