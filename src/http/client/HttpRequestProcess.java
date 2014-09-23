@@ -31,7 +31,7 @@ public class HttpRequestProcess implements Runnable {
     private RedirectManager redirectManager = null;
 
     private HttpUrl url;
-    private HttpHeaderRequest headerRequest = new HttpHeaderRequest();
+    private HttpHeaderRequest headerRequest;
     private HttpHeaderOutputStream headerResponse;
     private OutputStream userOutputStream;
     private String user = Config.getDefaultUserName();
@@ -84,6 +84,8 @@ public class HttpRequestProcess implements Runnable {
         socketOutputStream = socket.getOutputStream();
         socketInputStream = socket.getInputStream();
 
+        // HttpHeaderRequest нужно создавать каждый раз по новой для каждого нового запроса, иначе куки и другиепараметры не очищаются при редиректах
+        headerRequest = new HttpHeaderRequest();
         headerRequest.url(url);
         if (cookieManager != null && url != null) {
             Iterable<Cookie> cookies = cookieManager.get(user, url.getDomain(), url.getPath(), url.getScheme() == HttpUrlSheme.https);

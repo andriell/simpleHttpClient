@@ -88,12 +88,13 @@ public class CookieManagerSerial implements CookieManager {
             if (!domainEntry.getKey().isSubdomain(domain, true)) {
                 continue;
             }
-            HashSet<Cookie> cookieSet = domainEntry.getValue();
-            for(Cookie cookie: cookieSet) {
+            Iterator<Cookie> cookieIterator = domainEntry.getValue().iterator();
+            while (cookieIterator.hasNext()) {
+                Cookie cookie = cookieIterator.next();
                 // Удаляем старые куки
                 HttpDate expires = cookie.getExpires();
-                if (expires != null && expires.getTime() < now) {
-                    //cookieSet.remove(cookie);
+                if (expires != null && expires.getTime() <= now) {
+                    cookieIterator.remove();
                     continue;
                 }
                 CookieDomain cookieDomain = cookie.getDomain();
