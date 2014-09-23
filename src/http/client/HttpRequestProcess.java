@@ -31,7 +31,7 @@ public class HttpRequestProcess implements Runnable {
     private RedirectManager redirectManager = null;
 
     private HttpUrl url;
-    private HttpHeaderRequest headerRequest;
+    private HttpHeaderRequest headerRequest = new HttpHeaderRequest();
     private HttpHeaderOutputStream headerResponse;
     private OutputStream userOutputStream;
     private String user = Config.getDefaultUserName();
@@ -84,10 +84,10 @@ public class HttpRequestProcess implements Runnable {
         socketOutputStream = socket.getOutputStream();
         socketInputStream = socket.getInputStream();
 
-        // HttpHeaderRequest нужно создавать каждый раз по новой для каждого нового запроса, иначе куки и другиепараметры не очищаются при редиректах
-        headerRequest = new HttpHeaderRequest();
         headerRequest.url(url);
-        if (cookieManager != null && url != null) {
+        if (cookieManager != null) {
+            // Это мог быть редирект. Куки нужно почистить, иначе они остануться, даже если предыдущий запрои их удалил
+            headerRequest.deleteCookie();
             Iterable<Cookie> cookies = cookieManager.get(user, url.getDomain(), url.getPath(), url.getScheme() == HttpUrlSheme.https);
             for (Cookie cookie: cookies) {
                 headerRequest.addCookie(cookie);

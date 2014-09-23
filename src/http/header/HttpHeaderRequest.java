@@ -161,6 +161,10 @@ public class HttpHeaderRequest {
         return cookie.iterator();
     }
 
+    public void deleteCookie() {
+        cookie.clear();
+    }
+
     public void setData(byte[] data) {
         set(HttpHeaders.contentLength, ArrayHelper.intToArry(data.length));
         this.data = data;
