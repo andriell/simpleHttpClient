@@ -154,7 +154,10 @@ public class HttpHeaderRequest {
     }
 
     public void addCookie(Cookie cookie) {
-        this.cookie.add(cookie);
+        if (!this.cookie.add(cookie)) {
+            this.cookie.remove(cookie);
+            this.cookie.add(cookie);
+        }
     }
 
     public Iterator<Cookie> cookieIterator() {
