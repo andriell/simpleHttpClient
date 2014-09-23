@@ -93,7 +93,7 @@ public class CookieManagerSerial implements CookieManager {
                 // Удаляем старые куки
                 HttpDate expires = cookie.getExpires();
                 if (expires != null && expires.getTime() < now) {
-                    cookieSet.remove(cookie);
+                    //cookieSet.remove(cookie);
                     continue;
                 }
                 CookieDomain cookieDomain = cookie.getDomain();
